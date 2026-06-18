@@ -12,7 +12,9 @@ import {
   PASSING_PLAYS_ROWS,
 } from '@/lib/statRows'
 
-const YEARS = ['2025', '2024', '2023', '2022']
+// 2026 shows schedule from 2026 but stats from 2025
+const YEARS = ['2026', '2025', '2024', '2023', '2022']
+const STATS_YEAR_FOR: Record<string, string> = { '2026': '2025' }
 const DEFAULT_TEAM = 'Penn State'
 
 interface CFBTeam {
@@ -35,10 +37,18 @@ export default function DashboardPage() {
   const [loadingStats, setLoadingStats] = useState(false)
   const [error, setError]               = useState<string|null>(null)
 
+  // For 2026, stats come from 2025
+  const statsYear = STATS_YEAR_FOR[year] ?? year
+
   const teamStats = allStats.find(s => s.team === team) ?? null
   const yearStats = allStats
+  const noData    = !loadingStats && yearStats.length === 0
 
-  // Load teams
+  // Team logos map: school → logo URL (built from teams list)
+  const teamLogos: Record<string, string> = {}
+  teams.forEach(t => { if (t.logo) teamLogos[t.school] = t.logo })
+
+  // Load teams (always from the schedule year for the dropdown)
   useEffect(() => {
     setLoadingTeams(true)
     fetch('/api/teams?year=' + year)
@@ -53,7 +63,7 @@ export default function DashboardPage() {
       .finally(() => setLoadingTeams(false))
   }, [year])
 
-  // Load games
+  // Load games for the selected schedule year
   useEffect(() => {
     if (!team) return
     setLoadingGames(true)
@@ -65,16 +75,16 @@ export default function DashboardPage() {
       .finally(() => setLoadingGames(false))
   }, [team, year])
 
-  // Load advanced stats for the year
+  // Load advanced stats — use statsYear (2025 when viewing 2026)
   useEffect(() => {
     setLoadingStats(true)
     setAllStats([])
-    fetch('/api/advanced-stats?year=' + year)
+    fetch('/api/advanced-stats?year=' + statsYear)
       .then(r => r.json())
       .then(data => { if (Array.isArray(data)) setAllStats(data) })
       .catch(() => {})
       .finally(() => setLoadingStats(false))
-  }, [year])
+  }, [statsYear])
 
   // Load power ratings
   useEffect(() => {
@@ -84,7 +94,8 @@ export default function DashboardPage() {
       .catch(() => {})
   }, [])
 
-  const noData = !loadingStats && yearStats.length === 0
+  const td = teams.find(t => t.school === team)
+  const isFutureYear = year === '2026'
 
   return (
     <div style={{minHeight:'100vh',background:'var(--an-bg)'}}>
@@ -123,32 +134,36 @@ export default function DashboardPage() {
       <div style={{padding:'24px',maxWidth:1400,margin:'0 auto'}}>
 
         {/* Team header */}
-        {(() => {
-          const td = teams.find(t => t.school === team)
-          return (
-            <div style={{display:'flex',alignItems:'center',gap:16,marginBottom:24,paddingBottom:20,borderBottom:'1px solid var(--an-border)'}}>
-              {td?.logo
-                ? <img src={td.logo} alt={team} style={{width:64,height:64,objectFit:'contain',flexShrink:0}} />
-                : <div style={{width:64,height:64,borderRadius:8,background:'var(--an-surface2)',border:'1px solid var(--an-border)',flexShrink:0}}/>
+        <div style={{display:'flex',alignItems:'center',gap:16,marginBottom:24,paddingBottom:20,borderBottom:'1px solid var(--an-border)'}}>
+          {td?.logo
+            ? <img src={td.logo} alt={team} style={{width:64,height:64,objectFit:'contain',flexShrink:0}} />
+            : <div style={{width:64,height:64,borderRadius:8,background:'var(--an-surface2)',border:'1px solid var(--an-border)',flexShrink:0}}/>
+          }
+          {td?.color && (
+            <div style={{width:4,height:52,borderRadius:2,background:'#'+td.color.replace('#',''),flexShrink:0}}/>
+          )}
+          <div>
+            <h1 style={{fontSize:24,fontWeight:700,color:'var(--an-text)',lineHeight:1.1}}>{team}</h1>
+            <div style={{fontSize:12,color:'var(--an-muted)',marginTop:4}}>
+              {td?.conference ?? ''}{td?.conference ? ' · ' : ''}
+              {isFutureYear
+                ? <span>{year} Schedule · <span style={{color:'var(--an-muted)'}}>Stats from {statsYear}</span></span>
+                : <span>{year} Season</span>
               }
-              {td?.color && (
-                <div style={{width:4,height:52,borderRadius:2,background:'#'+td.color.replace('#',''),flexShrink:0}}/>
-              )}
-              <div>
-                <h1 style={{fontSize:24,fontWeight:700,color:'var(--an-text)',lineHeight:1.1}}>{team}</h1>
-                <div style={{fontSize:12,color:'var(--an-muted)',marginTop:4}}>
-                  {td?.conference ?? ''}{td?.conference ? ' · ' : ''}{year} Season
-                  {teamStats
-                    ? <span style={{marginLeft:10,color:'var(--an-green)'}}>● Stats loaded</span>
-                    : noData
-                      ? <span style={{marginLeft:10,color:'#dc2626'}}>● Run sync script to populate data</span>
-                      : null
-                  }
-                </div>
-              </div>
+              {teamStats
+                ? <span style={{marginLeft:10,color:'var(--an-green)'}}>● Stats loaded</span>
+                : noData
+                  ? <span style={{marginLeft:10,color:'#dc2626'}}>● Run sync script to populate data</span>
+                  : null
+              }
             </div>
-          )
-        })()}
+          </div>
+          {isFutureYear && (
+            <div style={{marginLeft:'auto',padding:'4px 10px',borderRadius:6,background:'rgba(0,163,71,0.1)',border:'1px solid rgba(0,163,71,0.25)',fontSize:11,color:'var(--an-green)',fontWeight:600}}>
+              2026 PREVIEW
+            </div>
+          )}
+        </div>
 
         {/* Row 1: Schedule + Five Factors */}
         <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:20,marginBottom:20}}>
@@ -156,7 +171,13 @@ export default function DashboardPage() {
             {loadingGames ? (
               <div className="card" style={{padding:40,textAlign:'center',color:'var(--an-muted)'}}>Loading schedule…</div>
             ) : games.length > 0 ? (
-              <ScheduleTable games={games} team={team} powerRatings={powerRatings} onTeamClick={setTeam} />
+              <ScheduleTable
+                games={games}
+                team={team}
+                powerRatings={powerRatings}
+                teamLogos={teamLogos}
+                onTeamClick={setTeam}
+              />
             ) : (
               <div className="card" style={{padding:40,textAlign:'center',color:'var(--an-muted)'}}>
                 No schedule data — run <code style={{background:'var(--an-surface2)',padding:'1px 6px',borderRadius:4,fontSize:11,color:'var(--an-text)'}}>npm run sync:games</code>
@@ -165,39 +186,24 @@ export default function DashboardPage() {
           </div>
           <div>
             <FiveFactors teamStats={teamStats} allStats={yearStats} />
+            {isFutureYear && yearStats.length > 0 && (
+              <div style={{marginTop:8,fontSize:11,color:'var(--an-muted)',textAlign:'right'}}>
+                Stats shown are from {statsYear} season
+              </div>
+            )}
           </div>
         </div>
 
         {/* Row 2: Standard Downs + Passing Downs */}
         <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:20,marginBottom:20}}>
-          <DownStatsTable
-            title="Standard Downs"
-            rows={STANDARD_DOWNS_ROWS}
-            teamStats={teamStats}
-            allStats={yearStats}
-          />
-          <DownStatsTable
-            title="Passing Downs"
-            rows={PASSING_DOWNS_ROWS}
-            teamStats={teamStats}
-            allStats={yearStats}
-          />
+          <DownStatsTable title="Standard Downs" rows={STANDARD_DOWNS_ROWS} teamStats={teamStats} allStats={yearStats} />
+          <DownStatsTable title="Passing Downs"  rows={PASSING_DOWNS_ROWS}  teamStats={teamStats} allStats={yearStats} />
         </div>
 
         {/* Row 3: Rushing Plays + Passing Plays */}
         <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:20,marginBottom:20}}>
-          <DownStatsTable
-            title="Rushing Plays"
-            rows={RUSHING_PLAYS_ROWS}
-            teamStats={teamStats}
-            allStats={yearStats}
-          />
-          <DownStatsTable
-            title="Passing Plays"
-            rows={PASSING_PLAYS_ROWS}
-            teamStats={teamStats}
-            allStats={yearStats}
-          />
+          <DownStatsTable title="Rushing Plays" rows={RUSHING_PLAYS_ROWS} teamStats={teamStats} allStats={yearStats} />
+          <DownStatsTable title="Passing Plays" rows={PASSING_PLAYS_ROWS} teamStats={teamStats} allStats={yearStats} />
         </div>
 
         {/* Futures placeholder */}
