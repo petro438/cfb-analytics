@@ -11,7 +11,8 @@
     "sync:games": "tsx scripts/sync-cfbd.ts --tabs=games",
     "sync:stats": "tsx scripts/sync-cfbd.ts --tabs=advanced_stats",
     "sync:ratings": "tsx scripts/sync-cfbd.ts --tabs=power_ratings",
-    "sync:teams": "tsx scripts/sync-cfbd.ts --tabs=teams"
+    "sync:teams": "tsx scripts/sync-cfbd.ts --tabs=teams",
+    "sync:pff": "tsx scripts/sync-pff.ts"
   },
   "dependencies": {
     "@types/dotenv": "^6.1.1",

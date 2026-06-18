@@ -5,6 +5,8 @@ import { CFBGame, PowerRating } from '@/lib/types'
 import ScheduleTable from '@/components/ScheduleTable'
 import FiveFactors from '@/components/FiveFactors'
 import DownStatsTable from '@/components/DownStatsTable'
+import PlayerTable from '@/components/PlayerTable'
+import { QB_COLS, RUSH_COLS, REC_COLS, BLOCKING_COLS, DEFENSE_COLS } from '@/lib/playerCols'
 import {
   PASSING_DOWNS_ROWS,
   RUSHING_PLAYS_ROWS,
@@ -36,12 +38,27 @@ export default function DashboardPage() {
   const [loadingGames, setLoadingGames] = useState(false)
   const [loadingStats, setLoadingStats] = useState(false)
   const [error, setError]               = useState<string|null>(null)
+  const [playerTab, setPlayerTab]       = useState<'qb'|'rush'|'rec'|'blocking'|'defense'>('qb')
+  const [players, setPlayers]           = useState<Record<string,string|number>[]>([])
+  const [loadingPlayers, setLoadingPlayers] = useState(false)
 
   // For 2026, stats come from 2025
   const statsYear = STATS_YEAR_FOR[year] ?? year
 
   const teamStats = allStats.find(s => s.team === team) ?? null
   const yearStats = allStats
+  // Load player stats when team, statsYear, or playerTab changes
+  useEffect(() => {
+    if (!team) return
+    setLoadingPlayers(true)
+    setPlayers([])
+    fetch(`/api/players?type=${playerTab}&team=${encodeURIComponent(team)}&season=${statsYear}`)
+      .then(r => r.json())
+      .then(data => { if (Array.isArray(data)) setPlayers(data) })
+      .catch(() => {})
+      .finally(() => setLoadingPlayers(false))
+  }, [team, statsYear, playerTab])
+
   const noData    = !loadingStats && yearStats.length === 0
 
   // Team logos map: school → logo URL (built from teams list)
@@ -204,6 +221,61 @@ export default function DashboardPage() {
         <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:20,marginBottom:20}}>
           <DownStatsTable title="Rushing Plays" rows={RUSHING_PLAYS_ROWS} teamStats={teamStats} allStats={yearStats} />
           <DownStatsTable title="Passing Plays" rows={PASSING_PLAYS_ROWS} teamStats={teamStats} allStats={yearStats} />
+        </div>
+
+        {/* Player Stats */}
+        <div style={{marginBottom:20}}>
+          {/* Tab bar */}
+          <div style={{display:'flex',gap:4,marginBottom:12}}>
+            {(['qb','rush','rec','blocking','defense'] as const).map(tab => (
+              <button
+                key={tab}
+                onClick={() => setPlayerTab(tab)}
+                style={{
+                  padding:'6px 14px',
+                  borderRadius:6,
+                  border:'1px solid var(--an-border)',
+                  background: playerTab === tab ? 'var(--an-green)' : 'var(--an-surface)',
+                  color: playerTab === tab ? '#fff' : 'var(--an-text)',
+                  fontWeight: playerTab === tab ? 600 : 400,
+                  fontSize:12,
+                  cursor:'pointer',
+                  textTransform:'uppercase',
+                  letterSpacing:'0.05em',
+                  fontFamily:'inherit',
+                }}
+              >
+                {tab === 'qb' ? 'QB' : tab === 'rush' ? 'Rushing' : tab === 'rec' ? 'Receiving' : tab === 'blocking' ? 'Blocking' : 'Defense'}
+              </button>
+            ))}
+          </div>
+
+          {loadingPlayers ? (
+            <div className="card" style={{padding:32,textAlign:'center',color:'var(--an-muted)'}}>Loading players…</div>
+          ) : (
+            <>
+              {playerTab === 'qb' && (
+                <PlayerTable title="Quarterbacks" players={players} cols={QB_COLS}
+                  snapField="attempts" defaultSort="grades_pass" />
+              )}
+              {playerTab === 'rush' && (
+                <PlayerTable title="Rushing" players={players} cols={RUSH_COLS}
+                  snapField="attempts" defaultSort="grades_run" />
+              )}
+              {playerTab === 'rec' && (
+                <PlayerTable title="Receiving" players={players} cols={REC_COLS}
+                  snapField="targets" defaultSort="grades_pass_route" />
+              )}
+              {playerTab === 'blocking' && (
+                <PlayerTable title="Blocking" players={players} cols={BLOCKING_COLS}
+                  snapField="snap_counts_offense" defaultSort="grades_offense" />
+              )}
+              {playerTab === 'defense' && (
+                <PlayerTable title="Defense" players={players} cols={DEFENSE_COLS}
+                  snapField="snap_counts_defense" defaultSort="grades_defense" />
+              )}
+            </>
+          )}
         </div>
 
         {/* Futures placeholder */}

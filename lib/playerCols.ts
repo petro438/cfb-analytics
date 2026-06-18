@@ -1,0 +1,86 @@
+// Column definitions for each PFF player stat table
+
+export const QB_COLS = [
+  { key: 'attempts',           label: 'Att',    decimals: 0 },
+  { key: 'completions',        label: 'Comp',   decimals: 0 },
+  { key: 'completion_percent', label: 'Comp%',  decimals: 1 },
+  { key: 'yards',              label: 'Yds',    decimals: 0 },
+  { key: 'ypa',                label: 'YPA',    decimals: 1 },
+  { key: 'touchdowns',         label: 'TD',     decimals: 0 },
+  { key: 'interceptions',      label: 'INT',    decimals: 0, lowerBetter: true },
+  { key: 'sack_percent',       label: 'Sk%',    decimals: 1, lowerBetter: true },
+  { key: 'big_time_throws',    label: 'BTT',    decimals: 0 },
+  { key: 'btt_rate',           label: 'BTT%',   decimals: 1 },
+  { key: 'twp_rate',           label: 'TWP%',   decimals: 1, lowerBetter: true },
+  { key: 'avg_depth_of_target',label: 'aDOT',   decimals: 1 },
+  { key: 'qb_rating',          label: 'QBR',    decimals: 1 },
+  { key: 'grades_pass',        label: 'Pass Grd', isGrade: true },
+  { key: 'grades_offense',     label: 'Off Grd',  isGrade: true },
+]
+
+export const RUSH_COLS = [
+  { key: 'attempts',           label: 'Att',    decimals: 0 },
+  { key: 'yards',              label: 'Yds',    decimals: 0 },
+  { key: 'ypa',                label: 'YPA',    decimals: 1 },
+  { key: 'touchdowns',         label: 'TD',     decimals: 0 },
+  { key: 'yards_after_contact',label: 'YAC',    decimals: 0 },
+  { key: 'yco_attempt',        label: 'YCO/A',  decimals: 1 },
+  { key: 'avoided_tackles',    label: 'Avoid',  decimals: 0 },
+  { key: 'elusive_rating',     label: 'Elusive', decimals: 1 },
+  { key: 'breakaway_percent',  label: 'Brkwy%', decimals: 1 },
+  { key: 'first_downs',        label: '1D',     decimals: 0 },
+  { key: 'fumbles',            label: 'Fum',    decimals: 0, lowerBetter: true },
+  { key: 'grades_run',         label: 'Run Grd', isGrade: true },
+  { key: 'grades_offense',     label: 'Off Grd', isGrade: true },
+]
+
+export const REC_COLS = [
+  { key: 'targets',                      label: 'Tgt',    decimals: 0 },
+  { key: 'receptions',                   label: 'Rec',    decimals: 0 },
+  { key: 'caught_percent',               label: 'Ctch%',  decimals: 1 },
+  { key: 'yards',                        label: 'Yds',    decimals: 0 },
+  { key: 'yards_per_reception',          label: 'YPR',    decimals: 1 },
+  { key: 'yprr',                         label: 'YPRR',   decimals: 2 },
+  { key: 'avg_depth_of_target',          label: 'aDOT',   decimals: 1 },
+  { key: 'touchdowns',                   label: 'TD',     decimals: 0 },
+  { key: 'drops',                        label: 'Drop',   decimals: 0, lowerBetter: true },
+  { key: 'drop_rate',                    label: 'Drop%',  decimals: 1, lowerBetter: true },
+  { key: 'yards_after_catch_per_reception', label: 'YAC/R', decimals: 1 },
+  { key: 'contested_receptions',         label: 'Con Rec', decimals: 0 },
+  { key: 'first_downs',                  label: '1D',     decimals: 0 },
+  { key: 'grades_pass_route',            label: 'Route Grd', isGrade: true },
+  { key: 'grades_offense',               label: 'Off Grd',   isGrade: true },
+]
+
+export const BLOCKING_COLS = [
+  { key: 'snap_counts_offense',    label: 'Snaps',   decimals: 0 },
+  { key: 'pass_block_percent',     label: 'PBP%',    decimals: 1 },
+  { key: 'pbe',                    label: 'PBE',     decimals: 1 },
+  { key: 'pressures_allowed',      label: 'Pres',    decimals: 0, lowerBetter: true },
+  { key: 'sacks_allowed',          label: 'Sacks',   decimals: 0, lowerBetter: true },
+  { key: 'hurries_allowed',        label: 'Hurries', decimals: 0, lowerBetter: true },
+  { key: 'hits_allowed',           label: 'Hits',    decimals: 0, lowerBetter: true },
+  { key: 'grades_pass_block',      label: 'PB Grd',  isGrade: true },
+  { key: 'grades_run_block',       label: 'RB Grd',  isGrade: true },
+  { key: 'grades_offense',         label: 'Off Grd', isGrade: true },
+]
+
+export const DEFENSE_COLS = [
+  { key: 'snap_counts_defense',      label: 'Snaps',  decimals: 0 },
+  { key: 'tackles',                  label: 'Tkl',    decimals: 0 },
+  { key: 'assists',                  label: 'Ast',    decimals: 0 },
+  { key: 'missed_tackles',           label: 'Miss',   decimals: 0, lowerBetter: true },
+  { key: 'missed_tackle_rate',       label: 'MTR%',   decimals: 1, lowerBetter: true },
+  { key: 'sacks',                    label: 'Sacks',  decimals: 1 },
+  { key: 'hits',                     label: 'Hits',   decimals: 0 },
+  { key: 'hurries',                  label: 'Hurr',   decimals: 0 },
+  { key: 'total_pressures',          label: 'Pres',   decimals: 0 },
+  { key: 'tackles_for_loss',         label: 'TFL',    decimals: 1 },
+  { key: 'interceptions',            label: 'INT',    decimals: 0 },
+  { key: 'pass_break_ups',           label: 'PBU',    decimals: 0 },
+  { key: 'forced_fumbles',           label: 'FF',     decimals: 0 },
+  { key: 'grades_defense',           label: 'Def Grd',  isGrade: true },
+  { key: 'grades_pass_rush_defense', label: 'PR Grd',   isGrade: true },
+  { key: 'grades_coverage_defense',  label: 'Cov Grd',  isGrade: true },
+  { key: 'grades_run_defense',       label: 'RD Grd',   isGrade: true },
+]

@@ -7,6 +7,11 @@ export const SHEET_TABS = {
   FUTURES: 'futures',
   POWER_RATINGS: 'power_ratings',
   TEAMS: 'teams',
+  PFF_QB: 'pff_qb',
+  PFF_RUSH: 'pff_rush',
+  PFF_REC: 'pff_rec',
+  PFF_BLOCKING: 'pff_blocking',
+  PFF_DEFENSE: 'pff_defense',
 } as const
 
 // Build an authenticated Google Sheets client.
