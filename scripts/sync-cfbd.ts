@@ -23,7 +23,7 @@ import { parse as parseCsv } from 'csv-parse/sync'
 
 dotenv.config({ path: '.env.local' })
 
-import { writeSheet, SHEET_TABS } from '../lib/sheets'
+import { writeSheet, readSheet, SHEET_TABS } from '../lib/sheets'
 import {
   fetchGames,
   fetchAdvancedStats,
@@ -98,8 +98,20 @@ async function syncGames() {
     spreadByGame[g.id] ?? '',
   ])
 
-  await writeSheet(SHEET_TABS.GAMES, headers, rows)
-  console.log(`  → ${games.length} games written`)
+  // Preserve rows from other seasons
+  let preserved: (string | number | null | undefined)[][] = []
+  try {
+    const existing = await readSheet(SHEET_TABS.GAMES)
+    preserved = existing
+      .filter(r => String(r.season) !== String(YEAR))
+      .map(r => headers.map(h => r[h] ?? ''))
+  } catch {
+    // Sheet may be empty on first run
+  }
+
+  const combined = [...preserved, ...rows]
+  await writeSheet(SHEET_TABS.GAMES, headers, combined)
+  console.log(`  → ${rows.length} games written for ${YEAR}, ${preserved.length} rows preserved from other seasons`)
 }
 
 // ─────────────────────────────────────────────
