@@ -10,7 +10,7 @@ export const SHEET_TABS = {
   PFF_QB: 'pff_qb',
   PFF_RUSH: 'pff_rush',
   PFF_REC: 'pff_rec',
-  PFF_BLOCKING: 'pff_blocking',
+  PFF_BLOCKING: 'pff_block',
   PFF_DEFENSE: 'pff_defense',
 } as const
 

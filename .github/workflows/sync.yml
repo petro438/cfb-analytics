@@ -2,18 +2,17 @@ name: Sync CFBD data to Google Sheets
 
 on:
   schedule:
-    # Runs every day at 6am ET during season (Sep-Jan), weekly otherwise
-    - cron: '0 10 * * *'   # 10:00 UTC = 6am ET
-  workflow_dispatch:        # Allow manual trigger from GitHub Actions UI
+    - cron: '0 10 * * *'   # 10:00 UTC = 6am ET daily
+  workflow_dispatch:
     inputs:
       year:
-        description: 'Season year (default: 2025)'
+        description: 'Season year (leave blank to sync both 2025 and 2026)'
         required: false
-        default: '2025'
+        default: ''
       tabs:
         description: 'Comma-separated tabs to sync (default: all)'
         required: false
-        default: 'games,advanced_stats,power_ratings'
+        default: 'teams,games,advanced_stats,power_ratings'
 
 jobs:
   sync:
@@ -28,12 +27,24 @@ jobs:
 
       - run: npm ci
 
-      - name: Run sync script
+      - name: Sync 2025 data
+        if: ${{ github.event.inputs.year == '' || github.event.inputs.year == '2025' }}
         env:
           CFBD_API_KEY: ${{ secrets.CFBD_API_KEY }}
           GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
           GOOGLE_SHEET_ID: ${{ secrets.GOOGLE_SHEET_ID }}
         run: |
           npx tsx scripts/sync-cfbd.ts \
-            --year=${{ github.event.inputs.year || '2025' }} \
-            --tabs=${{ github.event.inputs.tabs || 'games,advanced_stats,power_ratings' }}
+            --year=2025 \
+            --tabs=${{ github.event.inputs.tabs || 'teams,games,advanced_stats,power_ratings' }}
+
+      - name: Sync 2026 games
+        if: ${{ github.event.inputs.year == '' || github.event.inputs.year == '2026' }}
+        env:
+          CFBD_API_KEY: ${{ secrets.CFBD_API_KEY }}
+          GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+          GOOGLE_SHEET_ID: ${{ secrets.GOOGLE_SHEET_ID }}
+        run: |
+          npx tsx scripts/sync-cfbd.ts \
+            --year=2026 \
+            --tabs=games
