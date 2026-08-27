@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import { CFBGame, PowerRating } from '@/lib/types'
+import Link from 'next/link'
+import NavBar from '@/components/NavBar'
 import ScheduleTable from '@/components/ScheduleTable'
 import FiveFactors from '@/components/FiveFactors'
 import DownStatsTable from '@/components/DownStatsTable'
@@ -117,13 +119,7 @@ export default function DashboardPage() {
   return (
     <div style={{minHeight:'100vh',background:'var(--an-bg)'}}>
 
-      {/* Nav */}
-      <div style={{borderBottom:'1px solid var(--an-border)',background:'var(--an-surface)',padding:'0 24px',display:'flex',alignItems:'center',height:52,gap:24}}>
-        <span style={{color:'var(--an-green)',fontWeight:700,fontSize:15,letterSpacing:'0.02em'}}>CFB Analytics</span>
-        <span style={{color:'var(--an-border)',fontSize:18}}>|</span>
-        <span style={{color:'var(--an-muted)',fontSize:12}}>Action Network Internal</span>
-        {error && <span style={{color:'#dc2626',fontSize:12,marginLeft:'auto'}}>⚠ {error}</span>}
-      </div>
+      <NavBar error={error} />
 
       {/* Filter bar */}
       <div style={{borderBottom:'1px solid var(--an-border)',background:'var(--an-surface)',padding:'12px 24px',display:'flex',alignItems:'flex-end',gap:16,flexWrap:'wrap'}}>
@@ -175,11 +171,19 @@ export default function DashboardPage() {
               }
             </div>
           </div>
-          {isFutureYear && (
-            <div style={{marginLeft:'auto',padding:'4px 10px',borderRadius:6,background:'rgba(0,163,71,0.1)',border:'1px solid rgba(0,163,71,0.25)',fontSize:11,color:'var(--an-green)',fontWeight:600}}>
-              2026 PREVIEW
-            </div>
-          )}
+          <div style={{marginLeft:'auto',display:'flex',alignItems:'center',gap:10}}>
+            {isFutureYear && (
+              <div style={{padding:'4px 10px',borderRadius:6,background:'rgba(0,163,71,0.1)',border:'1px solid rgba(0,163,71,0.25)',fontSize:11,color:'var(--an-green)',fontWeight:600}}>
+                2026 PREVIEW
+              </div>
+            )}
+            <Link
+              href={`/compare?a=${encodeURIComponent(team)}&year=${year}`}
+              style={{padding:'6px 12px',borderRadius:6,border:'1px solid var(--an-border)',background:'var(--an-surface)',fontSize:12,color:'var(--an-text)',textDecoration:'none',whiteSpace:'nowrap'}}
+            >
+              Compare →
+            </Link>
+          </div>
         </div>
 
         {/* Row 1: Schedule + Five Factors */}

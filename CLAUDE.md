@@ -21,6 +21,7 @@ Internal college football analytics dashboard built for Action Network. Before m
 ```
 app/
   page.tsx                  Main dashboard (team/year filters, all tables)
+  compare/page.tsx          Two-team comparison view (offense + defense side by side)
   layout.tsx                Root layout, DM Sans font
   globals.css               CSS vars, table/card styles
   api/
@@ -31,17 +32,19 @@ app/
     players/route.ts        PFF player stats — ?type=qb|rush|rec|blocking|defense&team=X&season=Y
 
 components/
-  ScheduleTable.tsx         Schedule + results, projected spreads, ATS, win prob, opponent logos
+  NavBar.tsx                Shared top nav (Team Dashboard / Compare) with active-link state
+  ScheduleTable.tsx         Schedule + results, Proj vs. market spread, ATS, win prob, opponent logos
   FiveFactors.tsx           Five factors with percentile rank shading
   DownStatsTable.tsx        Reusable table for standard/passing downs, rushing/passing plays
+  ComparisonTable.tsx       Team A vs. Team B for one section + one side (off/def), same rank shading
   PlayerTable.tsx           PFF player stats, sortable, grade shading only (no stat color coding)
 
 lib/
   sheets.ts                 Google Sheets client — readSheet(tab), writeSheet(tab, headers, rows)
   cfbd.ts                   CFBD API wrapper — fetchGames, fetchTeams, fetchAdvancedStats, fetchLines
   types.ts                  CFBGame, PowerRating interfaces
-  utils.ts                  rankColor(), projectedSpread(), formatSpread(), fmt()
-  statRows.ts               Column config for DownStatsTable sections
+  utils.ts                  rankColor(), rankOf(), projectedSpread(), formatSpread(), fmt(), formatStatValue()
+  statRows.ts               StatRow config for every stat section; STAT_SECTIONS drives the compare page
   playerCols.ts             Column definitions for all five PFF player tables
   pffTeamMap.ts             PFF team name → CFBD name mapping (and reverse)
 
@@ -88,22 +91,60 @@ All data lives in a single Google Sheet. Tab names are defined in `lib/sheets.ts
 - If a team shows no player data despite having Sheet rows, check the `team_name` value in the Sheet against `pffTeamMap.ts`
 
 ### Field naming
-- CFBD REST API returns **camelCase**: `homeTeam`, `awayTeam`, `startDate`, `neutralSite`, `home_post_win_prob`
-- Win probability fields specifically: `home_post_win_prob` / `away_post_win_prob` (snake_case, `post` not `postgame`)
+- CFBD REST API returns **camelCase** for every field, with no exceptions: `homeTeam`, `awayTeam`,
+  `startDate`, `neutralSite`, `homePostgameWinProbability`
+- Win probability specifically: `homePostgameWinProbability` / `awayPostgameWinProbability` —
+  camelCase, and `Postgame`, not `post`. Verified against the live API.
+- One concept, three layers, three spellings — keep them straight:
+
+  | Layer | Name |
+  |---|---|
+  | CFBD API response (`lib/cfbd.ts`) | `homePostgameWinProbability` |
+  | `games` sheet column (`sync-cfbd.ts`) | `home_postgame_win_prob` |
+  | `/api/games` JSON + `CFBGame` (`lib/types.ts`) | `home_postgame_win_prob` |
+
+  A wrong key on the API object is just `undefined`, and `undefined ?? ''` writes an empty cell —
+  so a typo here fails silently and TypeScript cannot catch it (the interface declares the typo).
+  This is exactly how the win prob column sat empty for all 7,441 rows. If a column comes back
+  blank everywhere, suspect a field-name mismatch before suspecting the API.
 - The `games` Sheet tab stores snake_case: `home_team`, `away_team`, `start_date`, etc.
 - CFBD advanced stats API returns nested objects; `sync-cfbd.ts` flattens to snake_case: `off_success_rate`, `def_havoc_total`, etc.
 
 ### Projected spread formula
-For future games without a Vegas line:
+Computed from the `power_ratings` tab for **every** game, not just future ones:
 ```
 spread (from team's perspective) = opponent_rating - team_rating - home_field_advantage (2pts)
 ```
-Implemented in `lib/utils.ts` → `projectedSpread()`.
+Implemented in `lib/utils.ts` → `projectedSpread()`. Higher rating = better team, so a negative
+spread means the selected team is favored. Neutral-site games drop the HFA.
+
+`ScheduleTable` shows this as its own **Proj** column alongside the market **Spread** column. When
+both exist, `edge = proj - market`: negative means the model likes the selected team more than the
+market does (green), positive means it likes the opponent (red). Edges under 1 pt stay muted.
+The compare page shows the same projection for any two teams with a home/neutral site selector.
 
 ### Rank/percentile shading
+- `rankOf(value, field, allStats, lowerIsBetter)` in `lib/utils.ts` returns `{ rank, total, percentile }`,
+  ignoring teams whose value is missing or `0`
 - `rankColor(percentile, lowerIsBetter)` in `lib/utils.ts` returns `{ bg, text }` CSS colors
-- Used in `FiveFactors.tsx` and `DownStatsTable.tsx` for rank badges
+- Used in `FiveFactors.tsx`, `DownStatsTable.tsx`, and `ComparisonTable.tsx` for rank badges
 - **Not used** in `PlayerTable.tsx` (stat columns are plain text; only PFF grade columns get shading)
+
+---
+
+## Comparison View (`/compare`)
+
+- Picks two teams + a season, and renders every `STAT_SECTIONS` entry twice — offense on the left,
+  defense on the right — as `A value | A rank | Stat | B rank | B value`.
+- Ranks are league-wide (all FBS teams), so the shading matches the single-team dashboard exactly.
+  The better team's value cell gets a faint green tint.
+- The header shows both power ratings and the projected spread, with a Site selector (A home /
+  neutral / B home). Spread is always from Team A's perspective.
+- Deep-linkable via `/compare?a=Penn+State&b=Ohio+State&year=2025`. The dashboard's
+  "Compare →" button links here with the current team prefilled. Params are read from
+  `window.location.search` on mount rather than `useSearchParams`, which keeps the route
+  statically prerenderable with no `Suspense` boundary.
+- Follows the same `STATS_YEAR_FOR` rule as the dashboard: 2026 shows 2025 stats.
 
 ---
 

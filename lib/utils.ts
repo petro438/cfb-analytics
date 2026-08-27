@@ -67,3 +67,31 @@ export function fmt(n: number | null | undefined, decimals = 2): string {
   if (n == null || isNaN(n as number)) return '—'
   return Number(n).toFixed(decimals)
 }
+
+// Rank a single value for a field across all teams.
+// Returns 1-based rank, the number of teams with data, and a 0–1 percentile (1 = best).
+export function rankOf(
+  value: number,
+  field: string,
+  allStats: Record<string, string | number>[],
+  lowerIsBetter = false
+): { rank: number; total: number; percentile: number } {
+  const values = allStats
+    .map((s) => Number(s[field]))
+    .filter((v) => !isNaN(v) && v !== 0)
+    .sort((a, b) => (lowerIsBetter ? a - b : b - a))
+
+  const total = values.length
+  if (total === 0) return { rank: 0, total: 0, percentile: 0.5 }
+
+  const idx = values.findIndex((v) => Math.abs(v - value) < 0.000001)
+  const rank = idx === -1 ? total : idx + 1
+  const percentile = total > 1 ? (total - rank) / (total - 1) : 0.5
+  return { rank, total, percentile }
+}
+
+// Format a stat value as a percentage or fixed-decimal number
+export function formatStatValue(n: number, pct = false, decimals = 2): string {
+  if (n == null || isNaN(n)) return '—'
+  return pct ? `${(n * 100).toFixed(1)}%` : fmt(n, decimals)
+}

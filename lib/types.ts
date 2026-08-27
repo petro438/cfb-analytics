@@ -10,11 +10,11 @@ export interface CFBGame {
   home_team: string
   home_conference: string
   home_points: number | null
-  home_post_win_prob: number | null
+  home_postgame_win_prob: number | null
   away_team: string
   away_conference: string
   away_points: number | null
-  away_post_win_prob: number | null
+  away_postgame_win_prob: number | null
   completed: boolean
   spread: number | null
 }

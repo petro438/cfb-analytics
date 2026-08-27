@@ -1,6 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { readSheet, SHEET_TABS } from '@/lib/sheets'
 
+// Sheet cells are always strings. Blank, missing, and non-numeric all mean "no value".
+function num(v: string | undefined): number | null {
+  if (v == null || v === '') return null
+  const n = Number(v)
+  return Number.isNaN(n) ? null : n
+}
+
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url)
   const team = searchParams.get('team')
@@ -29,14 +36,14 @@ export async function GET(request: NextRequest) {
         conference_game: r.conference_game === '1',
         home_team: r.home_team,
         home_conference: r.home_conference,
-        home_points: r.home_points !== '' ? Number(r.home_points) : null,
-        home_post_win_prob: r.home_post_win_prob !== '' ? Number(r.home_post_win_prob) : null,
+        home_points: num(r.home_points),
+        home_postgame_win_prob: num(r.home_postgame_win_prob),
         away_team: r.away_team,
         away_conference: r.away_conference,
-        away_points: r.away_points !== '' ? Number(r.away_points) : null,
-        away_post_win_prob: r.away_post_win_prob !== '' ? Number(r.away_post_win_prob) : null,
+        away_points: num(r.away_points),
+        away_postgame_win_prob: num(r.away_postgame_win_prob),
         completed: r.completed === '1',
-        spread: r.spread !== '' ? Number(r.spread) : null,
+        spread: num(r.spread),
       }))
       .sort((a, b) => a.week - b.week)
 

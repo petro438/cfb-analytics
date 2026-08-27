@@ -1,35 +1,12 @@
 'use client'
-import { fmt, rankColor } from '@/lib/utils'
-
-interface DownStatsRow {
-  label: string
-  offField: string
-  defField: string
-  offLowerBetter?: boolean
-  defLowerBetter?: boolean
-  pct?: boolean
-  decimals?: number
-}
+import { formatStatValue, rankColor, rankOf } from '@/lib/utils'
+import { StatRow } from '@/lib/statRows'
 
 interface DownStatsTableProps {
   title: string
-  rows: DownStatsRow[]
+  rows: StatRow[]
   teamStats: Record<string, string | number> | null
   allStats: Record<string, string | number>[]
-}
-
-function getRank(
-  value: number,
-  field: string,
-  allStats: Record<string, string | number>[],
-  lowerIsBetter: boolean
-): number {
-  const values = allStats
-    .map((s) => Number(s[field]))
-    .filter((v) => !isNaN(v) && v !== 0)
-    .sort((a, b) => (lowerIsBetter ? a - b : b - a))
-  const idx = values.findIndex((v) => Math.abs(v - value) < 0.000001)
-  return idx === -1 ? values.length : idx + 1
 }
 
 function RankedCell({
@@ -56,14 +33,18 @@ function RankedCell({
     )
   }
 
-  const rank = getRank(value, field, allStats, lowerIsBetter)
-  const total = allStats.filter((s) => !isNaN(Number(s[field])) && Number(s[field]) !== 0).length
-  const percentile = (total - rank) / (total - 1)
+  const { rank, total, percentile } = rankOf(value, field, allStats, lowerIsBetter)
   const { bg, text } = rankColor(percentile, false)
+  const display = formatStatValue(value, pct, decimals)
 
-  const display = pct
-    ? `${(value * 100).toFixed(1)}%`
-    : fmt(value, decimals)
+  if (total === 0) {
+    return (
+      <>
+        <td style={{ color: 'var(--an-text)', textAlign: 'right' }}>{display}</td>
+        <td style={{ color: 'var(--an-muted)', textAlign: 'right' }}>—</td>
+      </>
+    )
+  }
 
   return (
     <>

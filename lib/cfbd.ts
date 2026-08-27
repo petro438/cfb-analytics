@@ -30,11 +30,13 @@ export interface CFBDGame {
   homeTeam: string
   homeConference: string
   homePoints: number | null
-  home_post_win_prob: number | null
+  // NOTE: camelCase "Postgame", matching the REST response. Not "post", not snake_case —
+  // getting this wrong silently writes empty cells, since a bad key is just undefined.
+  homePostgameWinProbability: number | null
   awayTeam: string
   awayConference: string
   awayPoints: number | null
-  away_post_win_prob: number | null
+  awayPostgameWinProbability: number | null
   completed: boolean
   excitementIndex: number | null
 }

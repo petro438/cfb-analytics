@@ -1,4 +1,5 @@
 'use client'
+import { Fragment } from 'react'
 import { CFBGame, PowerRating } from '@/lib/types'
 import { projectedSpread, formatSpread } from '@/lib/utils'
 
@@ -25,10 +26,7 @@ function getAtsResult(game: CFBGame, team: string): string {
 
 function getWinProb(game: CFBGame, team: string): number | null {
   const isHome = game.home_team === team
-  const raw = isHome ? game.home_post_win_prob : game.away_post_win_prob
-  if (raw == null || raw === '' as any) return null
-  const n = Number(raw)
-  return isNaN(n) ? null : n
+  return isHome ? game.home_postgame_win_prob : game.away_postgame_win_prob
 }
 
 const POSTSEASON_LABELS: Record<number, string> = {
@@ -37,6 +35,9 @@ const POSTSEASON_LABELS: Record<number, string> = {
   18: 'CFP Final',
 }
 
+// A projection this many points better than the market is worth flagging
+const EDGE_THRESHOLD = 1
+
 export default function ScheduleTable({ games, team, powerRatings, teamLogos, onTeamClick }: ScheduleTableProps) {
   const ratingsMap = Object.fromEntries(powerRatings.map((r) => [r.team, r.rating]))
 
@@ -44,9 +45,17 @@ export default function ScheduleTable({ games, team, powerRatings, teamLogos, on
   const postGames    = games.filter(g => g.season_type === 'postseason').sort((a, b) => a.week - b.week)
   const allGames     = [...regularGames, ...postGames]
 
+  // The power_ratings tab is a manual upload and often covers only part of FBS,
+  // so call out how much of this schedule it can actually project.
+  const teamHasRating = ratingsMap[team] != null
+  const unrated = allGames.filter(g => {
+    const opponent = g.home_team === team ? g.away_team : g.home_team
+    return ratingsMap[opponent] == null
+  }).length
+
   return (
     <div className="card">
-      <div className="card-header">Schedule & Results</div>
+      <div className="card-header">Schedule &amp; Results</div>
       <div style={{ overflowX: 'auto' }}>
         <table className="data-table">
           <thead>
@@ -54,7 +63,8 @@ export default function ScheduleTable({ games, team, powerRatings, teamLogos, on
               <th style={{ textAlign: 'center', width: 48 }}>Wk</th>
               <th style={{ textAlign: 'left' }}>Opponent</th>
               <th>Score</th>
-              <th>Spread</th>
+              <th title="Projected spread from power ratings">Proj</th>
+              <th title="Market spread">Spread</th>
               <th>ATS</th>
               <th>Win Prob</th>
             </tr>
@@ -68,19 +78,32 @@ export default function ScheduleTable({ games, team, powerRatings, teamLogos, on
               const weekLabel     = isPostseason ? (POSTSEASON_LABELS[game.week] ?? 'Bowl') : String(game.week)
               const oppLogo       = teamLogos[opponent] ?? null
 
-              // Spread
+              // Projected spread from power ratings, always from the selected team's perspective
               const teamRating = ratingsMap[team]
               const oppRating  = ratingsMap[opponent]
-              let spreadDisplay = '—'
-              if (!game.completed && teamRating != null && oppRating != null) {
-                const raw = isHome
+              const projSpread = teamRating != null && oppRating != null
+                ? isHome
                   ? projectedSpread(teamRating, oppRating, game.neutral_site)
                   : projectedSpread(oppRating, teamRating, game.neutral_site) * -1
-                spreadDisplay = `${formatSpread(raw)} (proj)`
-              } else if (game.spread != null) {
-                const s = isHome ? game.spread : -game.spread
-                spreadDisplay = formatSpread(s)
-              }
+                : null
+
+              // Market spread from the sheet, also from the selected team's perspective
+              const marketSpread = game.spread != null
+                ? (isHome ? game.spread : -game.spread)
+                : null
+
+              // Negative edge = we project the team stronger than the market does
+              const edge = projSpread != null && marketSpread != null
+                ? parseFloat((projSpread - marketSpread).toFixed(1))
+                : null
+              const edgeColor = edge == null || Math.abs(edge) < EDGE_THRESHOLD
+                ? 'var(--an-muted)'
+                : edge < 0 ? 'var(--an-green)' : '#dc2626'
+              const edgeTitle = edge == null
+                ? undefined
+                : edge === 0
+                  ? 'Projection matches the market'
+                  : `${Math.abs(edge).toFixed(1)} pts ${edge < 0 ? `toward ${team}` : `toward ${opponent}`} vs. market`
 
               // Score
               const scoreDisplay =
@@ -100,10 +123,10 @@ export default function ScheduleTable({ games, team, powerRatings, teamLogos, on
               const showDivider = isPostseason && idx > 0 && allGames[idx - 1].season_type === 'regular'
 
               return (
-                <>
+                <Fragment key={game.id}>
                   {showDivider && (
-                    <tr key={`divider-${game.id}`}>
-                      <td colSpan={6} style={{
+                    <tr>
+                      <td colSpan={7} style={{
                         padding: '4px 12px',
                         fontSize: 10,
                         fontWeight: 600,
@@ -117,7 +140,7 @@ export default function ScheduleTable({ games, team, powerRatings, teamLogos, on
                       </td>
                     </tr>
                   )}
-                  <tr key={game.id}>
+                  <tr>
                     <td style={{ textAlign: 'center', color: 'var(--an-muted)', fontSize: 11 }}>
                       {weekLabel}
                     </td>
@@ -151,7 +174,18 @@ export default function ScheduleTable({ games, team, powerRatings, teamLogos, on
                         <span style={{ color: 'var(--an-muted)' }}>—</span>
                       )}
                     </td>
-                    <td style={{ color: 'var(--an-muted)', fontSize: 12 }}>{spreadDisplay}</td>
+                    <td title={edgeTitle} style={{ fontSize: 12, fontVariantNumeric: 'tabular-nums' }}>
+                      {projSpread != null ? (
+                        <span style={{ color: edgeColor, fontWeight: edge != null && Math.abs(edge) >= EDGE_THRESHOLD ? 600 : 400 }}>
+                          {formatSpread(projSpread)}
+                        </span>
+                      ) : (
+                        <span style={{ color: 'var(--an-muted)' }}>—</span>
+                      )}
+                    </td>
+                    <td style={{ color: 'var(--an-muted)', fontSize: 12, fontVariantNumeric: 'tabular-nums' }}>
+                      {marketSpread != null ? formatSpread(marketSpread) : '—'}
+                    </td>
                     <td>
                       {atsResult !== '—' ? (
                         <span style={{ color: atsResult === 'W' ? 'var(--an-green)' : atsResult === 'L' ? '#dc2626' : 'var(--an-muted)', fontWeight: 600 }}>
@@ -165,12 +199,21 @@ export default function ScheduleTable({ games, team, powerRatings, teamLogos, on
                       {winProb != null ? `${(winProb * 100).toFixed(0)}%` : '—'}
                     </td>
                   </tr>
-                </>
+                </Fragment>
               )
             })}
           </tbody>
         </table>
       </div>
+      {(!teamHasRating || unrated > 0) && allGames.length > 0 && (
+        <div style={{ padding: '8px 16px', fontSize: 11, color: 'var(--an-muted)', borderTop: '1px solid var(--an-border)' }}>
+          {!teamHasRating
+            ? <>No power rating for {team}, so the Proj column is empty. </>
+            : <>No power rating for {unrated} of {allGames.length} opponents. </>}
+          Add them to <code style={{ background: 'var(--an-surface2)', padding: '1px 5px', borderRadius: 4 }}>public/power-ratings.csv</code> and run{' '}
+          <code style={{ background: 'var(--an-surface2)', padding: '1px 5px', borderRadius: 4 }}>npm run sync:ratings</code>.
+        </div>
+      )}
     </div>
   )
 }

@@ -89,11 +89,11 @@ async function syncGames() {
     g.homeTeam,
     g.homeConference,
     g.homePoints ?? '',
-    g.home_post_win_prob ?? '',
+    g.homePostgameWinProbability ?? '',
     g.awayTeam,
     g.awayConference,
     g.awayPoints ?? '',
-    g.away_post_win_prob ?? '',
+    g.awayPostgameWinProbability ?? '',
     g.completed ? '1' : '0',
     spreadByGame[g.id] ?? '',
   ])

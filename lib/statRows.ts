@@ -1,5 +1,23 @@
 
-export const PASSING_DOWNS_ROWS = [
+export interface StatRow {
+  label: string
+  offField: string
+  defField: string
+  offLowerBetter?: boolean
+  defLowerBetter?: boolean
+  pct?: boolean
+  decimals?: number
+}
+
+export const FIVE_FACTORS_ROWS: StatRow[] = [
+  { label: 'Success Rate',  offField: 'off_success_rate',     defField: 'def_success_rate',     defLowerBetter: true, pct: true },
+  { label: 'Explosiveness', offField: 'off_explosiveness',    defField: 'def_explosiveness',    defLowerBetter: true },
+  { label: 'Pts Per Opp.',  offField: 'off_points_per_opp',   defField: 'def_points_per_opp',   defLowerBetter: true },
+  { label: 'Havoc',         offField: 'off_havoc_total',      defField: 'def_havoc_total',      offLowerBetter: true, pct: true },
+  { label: 'Avg Field Pos', offField: 'off_field_pos_avg_pp', defField: 'def_field_pos_avg_pp', defLowerBetter: true },
+]
+
+export const PASSING_DOWNS_ROWS: StatRow[] = [
   {
     label: 'Rate',
     offField: 'off_pass_downs_rate',
@@ -27,7 +45,7 @@ export const PASSING_DOWNS_ROWS = [
   },
 ]
 
-export const RUSHING_PLAYS_ROWS = [
+export const RUSHING_PLAYS_ROWS: StatRow[] = [
   {
     label: 'Rate',
     offField: 'off_rush_rate',
@@ -55,7 +73,7 @@ export const RUSHING_PLAYS_ROWS = [
   },
 ]
 
-export const STANDARD_DOWNS_ROWS = [
+export const STANDARD_DOWNS_ROWS: StatRow[] = [
   {
     label: 'Rate',
     offField: 'off_std_downs_rate',
@@ -83,7 +101,7 @@ export const STANDARD_DOWNS_ROWS = [
   },
 ]
 
-export const PASSING_PLAYS_ROWS = [
+export const PASSING_PLAYS_ROWS: StatRow[] = [
   {
     label: 'Rate',
     offField: 'off_pass_rate',
@@ -109,4 +127,13 @@ export const PASSING_PLAYS_ROWS = [
     defField: 'def_pass_exp',
     defLowerBetter: true,
   },
+]
+
+// Every stat section, in dashboard order — used by the comparison view
+export const STAT_SECTIONS: { title: string; rows: StatRow[] }[] = [
+  { title: 'Five Factors',   rows: FIVE_FACTORS_ROWS },
+  { title: 'Standard Downs', rows: STANDARD_DOWNS_ROWS },
+  { title: 'Passing Downs',  rows: PASSING_DOWNS_ROWS },
+  { title: 'Rushing Plays',  rows: RUSHING_PLAYS_ROWS },
+  { title: 'Passing Plays',  rows: PASSING_PLAYS_ROWS },
 ]
