@@ -46,16 +46,27 @@ export function computePercentiles(
   return result
 }
 
-// Compute projected spread between two teams using power ratings
-// Returns spread from home team's perspective (negative = home favored)
+// TAN ratings sit on a 0-100 team-quality scale, not a points-of-margin scale,
+// so a rating gap has to be converted before it can be read as a spread.
+//
+// Calibrated by regressing 2025 closing lines on TAN 25 rating gaps across the
+// 690 non-neutral FBS games that had a market line:
+//     market_margin = 0.905 * rating_gap + 2.78     (r = 0.912)
+// Using the gap unconverted would overstate every spread by about 10%.
+// The 2.78 intercept is the market's average home-field edge, which lines up
+// with the per-team HFACW values in the ratings file (mean 2.49) — so HFACW is
+// already in points and is applied after the conversion, not scaled by it.
+export const RATING_POINTS_PER_UNIT = 0.905
+
+// Projected spread from the home team's perspective (negative = home favored).
+// Pass homeFieldAdvantage = 0 for neutral sites.
 export function projectedSpread(
   homeRating: number,
   awayRating: number,
-  neutralSite: boolean
+  homeFieldAdvantage: number
 ): number {
-  const hfa = neutralSite ? 0 : 2
-  // spread = away - home - hfa  (negative means home favored)
-  return parseFloat((awayRating - homeRating - hfa).toFixed(1))
+  const margin = (homeRating - awayRating) * RATING_POINTS_PER_UNIT + homeFieldAdvantage
+  return parseFloat((-margin).toFixed(1))
 }
 
 export function formatSpread(spread: number): string {

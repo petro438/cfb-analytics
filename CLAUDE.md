@@ -47,6 +47,7 @@ lib/
   statRows.ts               StatRow config for every stat section; STAT_SECTIONS drives the compare page
   playerCols.ts             Column definitions for all five PFF player tables
   pffTeamMap.ts             PFF team name → CFBD name mapping (and reverse)
+  ratingsTeamMap.ts         Power-ratings CSV team name → CFBD name mapping
 
 scripts/
   sync-cfbd.ts              Pulls from CFBD API → writes to Google Sheets
@@ -66,7 +67,7 @@ All data lives in a single Google Sheet. Tab names are defined in `lib/sheets.ts
 |---|---|---|
 | `GAMES` | `games` | All FBS games, both regular + postseason, all years stacked |
 | `ADVANCED_STATS` | `advanced_stats` | Season-level advanced stats per team |
-| `POWER_RATINGS` | `power_ratings` | Team power ratings (manual CSV upload) |
+| `POWER_RATINGS` | `power_ratings` | Team power ratings + per-team HFA (manual CSV upload) |
 | `TEAMS` | `teams` | Team metadata: logos, colors, conference, stadium info |
 | `PFF_QB` | `pff_qb` | PFF QB stats, multi-season stacked with `season` column |
 | `PFF_RUSH` | `pff_rush` | PFF rushing stats |
@@ -110,13 +111,42 @@ All data lives in a single Google Sheet. Tab names are defined in `lib/sheets.ts
 - The `games` Sheet tab stores snake_case: `home_team`, `away_team`, `start_date`, etc.
 - CFBD advanced stats API returns nested objects; `sync-cfbd.ts` flattens to snake_case: `off_success_rate`, `def_havoc_total`, etc.
 
+### Power ratings source
+`public/power-ratings.csv` is the TAN ratings export. Only three of its columns are used:
+
+| Column | Use |
+|---|---|
+| `Team` | team name, normalized to CFBD via `lib/ratingsTeamMap.ts` |
+| `TAN 26` | the rating |
+| `HFACW` | that team's home-field edge, **in points** |
+
+`sync-cfbd.ts` writes `team`, `rating`, `hfa` to the sheet and warns about any rated team that
+matches no CFBD school. Five names need mapping (`UMass`→`Massachusetts`, `ULM`→`UL Monroe`,
+`Miami Ohio`→`Miami (OH)`, `Appalachian State`→`App State`, `San Jose State`→`San José State`);
+add to `RATINGS_TO_CFBD` if the export adds more. North Dakota State and Sacramento State are
+rated but only become FBS in 2026, so they stay unmatched until the teams tab is synced for 2026.
+
 ### Projected spread formula
-Computed from the `power_ratings` tab for **every** game, not just future ones:
 ```
-spread (from team's perspective) = opponent_rating - team_rating - home_field_advantage (2pts)
+margin = (home_rating - away_rating) * RATING_POINTS_PER_UNIT + home_HFACW
+spread (from home's perspective) = -margin        # negative = home favored
 ```
-Implemented in `lib/utils.ts` → `projectedSpread()`. Higher rating = better team, so a negative
-spread means the selected team is favored. Neutral-site games drop the HFA.
+Implemented in `lib/utils.ts` → `projectedSpread(homeRating, awayRating, homeFieldAdvantage)`.
+Pass `0` for the HFA at neutral sites. Computed for **every** game, not just future ones.
+
+**TAN ratings are a 0-100 quality scale, not points of margin** — this is the easy thing to get
+wrong. `RATING_POINTS_PER_UNIT = 0.905` converts a rating gap into points, calibrated by
+regressing 2025 closing lines on TAN 25 gaps over the 690 non-neutral FBS games that had a line:
+
+```
+market_margin = 0.905 * rating_gap + 2.78      r = 0.912
+```
+
+Using the gap unconverted overstates every spread by ~10%. On 808 games with a closing line the
+converted model beats the raw one on mean absolute error (4.25 vs 4.46 pts). The 2.78 intercept is
+the market's average home edge, close to the mean HFACW of 2.49 — so HFACW is already in points
+and is added *after* the conversion, never scaled by it. Teams with a rating but no HFACW fall
+back to 2.5.
 
 `ScheduleTable` shows this as its own **Proj** column alongside the market **Spread** column. When
 both exist, `edge = proj - market`: negative means the model likes the selected team more than the

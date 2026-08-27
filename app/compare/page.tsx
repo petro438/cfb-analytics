@@ -11,6 +11,8 @@ import { formatSpread, projectedSpread } from '@/lib/utils'
 const YEARS = ['2026', '2025', '2024', '2023', '2022']
 const STATS_YEAR_FOR: Record<string, string> = { '2026': '2025' }
 const DEFAULT_A = 'Penn State'
+// Used when a team has a rating but no HFACW value of its own
+const DEFAULT_HFA = 2.5
 const DEFAULT_B = 'Ohio State'
 
 type Venue = 'a' | 'neutral' | 'b'
@@ -161,16 +163,23 @@ export default function ComparePage() {
     () => Object.fromEntries(powerRatings.map(r => [r.team, r.rating])),
     [powerRatings]
   )
+  const hfaMap = useMemo(
+    () => Object.fromEntries(powerRatings.map(r => [r.team, r.hfa])),
+    [powerRatings]
+  )
   const ratingA = ratingsMap[teamA] ?? null
   const ratingB = ratingsMap[teamB] ?? null
 
+  // The host's own home-field edge, or none at a neutral site
+  const hostHfa = venue === 'neutral'
+    ? 0
+    : (venue === 'a' ? hfaMap[teamA] : hfaMap[teamB]) ?? DEFAULT_HFA
+
   // Projected spread from team A's perspective, given who hosts
   const spreadA = ratingA != null && ratingB != null
-    ? venue === 'a'
-      ? projectedSpread(ratingA, ratingB, false)
-      : venue === 'b'
-        ? projectedSpread(ratingB, ratingA, false) * -1
-        : projectedSpread(ratingA, ratingB, true)
+    ? venue === 'b'
+      ? projectedSpread(ratingB, ratingA, hostHfa) * -1
+      : projectedSpread(ratingA, ratingB, hostHfa)
     : null
 
   const favorite = spreadA == null ? null : spreadA < 0 ? teamA : spreadA > 0 ? teamB : null

@@ -24,6 +24,7 @@ import { parse as parseCsv } from 'csv-parse/sync'
 dotenv.config({ path: '.env.local' })
 
 import { writeSheet, readSheet, SHEET_TABS } from '../lib/sheets'
+import { ratingsToCfbd, NOT_YET_FBS } from '../lib/ratingsTeamMap'
 import {
   fetchGames,
   fetchAdvancedStats,
@@ -199,15 +200,46 @@ async function syncPowerRatings() {
 
   console.log('Reading power-ratings.csv...')
   const raw = fs.readFileSync(csvPath, 'utf-8')
-  const records = parseCsv(raw, { columns: true, skip_empty_lines: true }) as {
-    team: string
-    rating: string
-  }[]
+  const records = parseCsv(raw, {
+    columns: true,
+    skip_empty_lines: true,
+    bom: true,
+  }) as Record<string, string>[]
 
-  const headers = ['team', 'rating']
-  const rows = records.map((r) => [r.team, r.rating])
+  // TAN 26 is the rating; HFACW is that team's home-field edge in points.
+  const rows: (string | number)[][] = []
+  const skipped: string[] = []
+  for (const r of records) {
+    const team = (r['Team'] ?? '').trim()
+    const rating = r['TAN 26']
+    if (!team || rating == null || rating === '') {
+      if (team) skipped.push(team)
+      continue
+    }
+    rows.push([ratingsToCfbd(team), rating, r['HFACW'] ?? ''])
+  }
+
+  const headers = ['team', 'rating', 'hfa']
   await writeSheet(SHEET_TABS.POWER_RATINGS, headers, rows)
   console.log(`  → ${rows.length} teams written`)
+  if (skipped.length) console.warn(`  ⚠ no TAN 26 rating, skipped: ${skipped.join(', ')}`)
+
+  // Report names that will not join against the teams tab, ignoring the two
+  // programs that are only FBS from 2026 on.
+  try {
+    const fbs = new Set((await readSheet(SHEET_TABS.TEAMS)).map((t) => t.school))
+    const orphans = rows
+      .map((row) => String(row[0]))
+      .filter((t) => !fbs.has(t) && !NOT_YET_FBS.has(t))
+    if (orphans.length) {
+      console.warn(`  ⚠ ${orphans.length} rated team(s) match no CFBD school — add to RATINGS_TO_CFBD:`)
+      orphans.forEach((t) => console.warn(`      ${t}`))
+    } else {
+      console.log('  ✓ every rated team matches a CFBD school')
+    }
+  } catch {
+    // teams tab may not be populated yet
+  }
 }
 
 

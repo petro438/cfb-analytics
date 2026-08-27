@@ -4,10 +4,14 @@ import { readSheet, SHEET_TABS } from '@/lib/sheets'
 export async function GET(_request: NextRequest) {
   try {
     const rows = await readSheet(SHEET_TABS.POWER_RATINGS)
-    const ratings = rows.map((r) => ({
-      team: r.team,
-      rating: Number(r.rating),
-    }))
+    const ratings = rows
+      .filter((r) => r.team && r.rating !== '')
+      .map((r) => ({
+        team: r.team,
+        rating: Number(r.rating),
+        hfa: r.hfa !== '' && r.hfa != null && !Number.isNaN(Number(r.hfa)) ? Number(r.hfa) : null,
+      }))
+      .filter((r) => !Number.isNaN(r.rating))
     return NextResponse.json(ratings, {
       headers: { 'Cache-Control': 's-maxage=3600, stale-while-revalidate=7200' },
     })

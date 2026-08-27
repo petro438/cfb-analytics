@@ -38,8 +38,12 @@ const POSTSEASON_LABELS: Record<number, string> = {
 // A projection this many points better than the market is worth flagging
 const EDGE_THRESHOLD = 1
 
+// Used when a team has a rating but no HFACW value of its own
+const DEFAULT_HFA = 2.5
+
 export default function ScheduleTable({ games, team, powerRatings, teamLogos, onTeamClick }: ScheduleTableProps) {
   const ratingsMap = Object.fromEntries(powerRatings.map((r) => [r.team, r.rating]))
+  const hfaMap = Object.fromEntries(powerRatings.map((r) => [r.team, r.hfa]))
 
   const regularGames = games.filter(g => g.season_type === 'regular').sort((a, b) => a.week - b.week)
   const postGames    = games.filter(g => g.season_type === 'postseason').sort((a, b) => a.week - b.week)
@@ -81,10 +85,15 @@ export default function ScheduleTable({ games, team, powerRatings, teamLogos, on
               // Projected spread from power ratings, always from the selected team's perspective
               const teamRating = ratingsMap[team]
               const oppRating  = ratingsMap[opponent]
+              // Home-field edge belongs to whoever is hosting, and is dropped entirely
+              // on neutral sites.
+              const hostHfa = game.neutral_site
+                ? 0
+                : (isHome ? hfaMap[team] : hfaMap[opponent]) ?? DEFAULT_HFA
               const projSpread = teamRating != null && oppRating != null
                 ? isHome
-                  ? projectedSpread(teamRating, oppRating, game.neutral_site)
-                  : projectedSpread(oppRating, teamRating, game.neutral_site) * -1
+                  ? projectedSpread(teamRating, oppRating, hostHfa)
+                  : projectedSpread(oppRating, teamRating, hostHfa) * -1
                 : null
 
               // Market spread from the sheet, also from the selected team's perspective

@@ -1,21 +1,139 @@
-team,rating
-Alabama,92
-Georgia,90
-Ohio State,89
-Michigan,87
-Penn State,86
-Texas,85
-Notre Dame,84
-LSU,83
-Ole Miss,82
-Tennessee,81
-Oregon,80
-USC,79
-Miami,78
-Florida State,77
-Clemson,76
-Oklahoma,75
-Texas A&M,74
-Utah,73
-North Carolina,72
-Kansas State,71
+Team,Conf,Div,SP+,HFACW,TAN 25,TAN 26,Coach,SOW,TARP,TEAM_MEAD,TEAM_NAME2,TEAM_ID,Team Total,HC,OC,DC,TAN_Rank
+Ohio State,B1G,,31.8,3.3,96.5,97.5,,0.3,10.5,OHST,Ohio State,336,27,Ryan Day,Arthur Smith,Matt Patricia,1
+Indiana,B1G,,24.5,2.8,99.5,95,,-1.2,7,IND,Indiana,262,31.7,Curt Cignetti,Mike Shanahan,Bryant Haines,2
+Oregon,B1G,,28.3,2.7,93,93.5,,-0.5,11,ORE,Oregon,259,29.7,Dan Lanning,Drew Mehringer,Chris Hampton,3
+Notre Dame,IND,,25.8,3.7,94,90,,0.7,5,NOTD,Notre Dame,322,31.5,Marcus Freeman,Mike Denbrock,Chris Ash,4
+Georgia,SEC,,25.5,2.3,91.5,89,,-1.7,7.5,GEO,Georgia,381,26.5,Kirby Smart,Mike Bobo,Glenn Schumann,5
+Texas,SEC,,23.7,2.6,88.5,88.5,,-1,10.5,TEX,Texas,361,25.6,Steve Sarkisian,Kyle Flood,Will Muschamp,6
+Texas A&M,SEC,,20.3,2,91,87.5,,-0.5,8,TXAM,Texas A&M,353,28.7,Mike Elko,Holmon Wiggins,Lyle Hemphill,7
+Penn State,B1G,,15.7,3.2,84,87,0.5,1.6,11,PNST,Penn State,364,24,Matt Campbell,Taylor Mouser,D'Anton Lynn,8
+LSU,SEC,,20.2,2.6,83.5,86.5,2.5,0.2,10.5,LSU,LSU,366,21.1,Lane Kiffin,Charlie Weis Jr,Blake Baker,9
+Oklahoma,SEC,,17.2,2.6,88.5,85.5,,-1,8,OKLA,Oklahoma,362,24.4,Brent Venables,Ben Arbuckle,Nate Dreiling,10
+Miami,ACC,,21,2.4,92.5,84.5,,-1.3,3,MIAF,Miami,348,26.6,Mario Cristobal,Shannon Dawson,Corey Hetherman,11
+Florida,SEC,,14.9,2.3,78.5,82.5,2.5,0.8,10.5,FLA,Florida,319,22.2,Jon Sumrall,Buster Faulkner,Brad White,12
+Texas Tech,B12,,23.1,3.3,87.8,82,-7,0.3,11,TXT,Texas Tech,373,33.6,Joey McGuire,Mack Leftwich,Shiel Wood,13
+Auburn,SEC,,11.2,2.5,83.5,81.5,1.5,1.9,7,AUB,Auburn,352,25.5,Alex Golesh,Joel Gordon,DJ Durkin,14
+Ole Miss,SEC,,15.9,2.6,89.5,81.5,-2,-0.5,4,MIS,Ole Miss,313,36.1,Pete Golding,John David Baker,Patrick Toney,14
+USC,B1G,,16.8,1.9,85,81,,-0.3,6,USC,USC,340,31.1,Lincoln Riley,Luke Huard,DAnton Lynn,16
+Michigan,B1G,,16.1,2.5,84,80.5,3,-0.4,4,MICH,Michigan,294,25.5,Kyle Whittingham,Jason Beck,Jay Hill,17
+Tennessee,SEC,,16,2.2,84.5,80,,1,4.5,TEN,Tennessee,271,33.8,Josh Heupel,Joey Halzle,Tim Banks,18
+Utah,B12,,11.9,3.1,89.5,79.5,-1.5,-0.8,2.5,UTAH,Utah,332,34.7,Morgan Scalley,Kevin McGiven,Colton Swan,19
+South Carolina,SEC,,12.1,2.8,77.5,79,1,0.8,9.5,SCAR,South Carolina,514,21.5,Shane Beamer,Kendal Briles,Clayton White,20
+Alabama,SEC,,18.2,3.3,91.5,78,,-1.6,-2,ALA,Alabama,328,23.6,Kalen DeBoer,Ryan Grubb,Kane Wommack,21
+BYU,B12,,15.5,3,81.5,78,,-2.1,8,BYU,BYU,277,25.5,Kalani Sitake,Aaron Roderick,Kelly Poppinga,21
+Florida State,ACC,,8.8,1.9,80.5,77.5,,2.2,5,FLST,Florida State,266,32.2,Mike Norvell,Tim Harris,Tony White,23
+Washington,B1G,,14.5,2.2,83.5,77.5,,0.9,3,WAS,Washington,320,28,Jedd Fisch,Jimmie Dougherty,Ryan Walters,23
+SMU,ACC,,10.9,2.7,80.5,77.5,,1.4,5.5,SMU,SMU,280,29.9,Rhett Lashlee,Casey Woods,Scott Symons,23
+Kansas State,B12,,10.4,2.8,79,76.5,1,1.5,5,KAST,Kansas State,503,24.4,Collin Klein,Sean Gleeson,Jordan Peterson,26
+Missouri,SEC,,14.8,2.8,86.5,75.5,-1.5,0.9,-0.5,MIZ,Missouri,309,27.7,Eliah Drinkwitz,Chip Lindsey,Corey Batoon,27
+Arkansas,SEC,,5,2.2,78.5,74.5,-3,3.7,6,ARK,Arkansas,329,30,Ryan Silverfield,Tim Cramsey,Ron Roberts,28
+Vanderbilt,SEC,,10,2.4,88.5,74.5,,-0.4,-4,VAN,Vanderbilt,315,29.4,Clark Lea,Timothy Beck,Clark Lea,28
+Wisconsin,B1G,,1.8,2.4,74,74,,-0.4,11,WIS,Wisconsin,338,14.2,Luke Fickell,Jeff Grimes,Mike Tressel,30
+Nebraska,B1G,,7.7,2,73,73.5,,-0.3,11,NEB,Nebraska,331,22.9,Matt Rhule,Dana Holgorsen,John Butler,31
+Arizona,B12,,10.2,2.2,83.5,73,,0.1,-1,ARZ,Arizona,506,27.1,Brent Brennan,Seth Doege,Danny Gonzales,32
+Houston,B12,,8.2,2.5,78,73,,-2.2,6.5,HOU,Houston,501,25.3,Willie Fritz,Slade Nagle,Austin Armstrong,32
+Illinois,B1G,,9.3,2.7,80.5,72.5,,-0.7,2.5,ILL,Illinois,286,23.3,Bret Bielema,Barry Lunney Jr.,Aaron Henry,34
+UCLA,B1G,,5.1,1.9,68.5,72.5,3,-0.2,11,UCLA,UCLA,526,18.7,Bob Chesney,Dean Kennedy,Colin Hitschler,34
+Cincinnati,B12,,4.5,1.8,80.5,72,,0.3,2,CIN,Cincinnati,269,28.6,Scott Satterfield,Nic Cardwell/Pete Thomas,Nate Woody,36
+Iowa,B1G,,13.6,3.1,85,72,,0.3,-3.5,IOWA,Iowa,306,20.2,Kirk Ferentz,Tim Lester,Phil Parker,36
+Louisville,ACC,,11,1.9,80,72,,1.1,0,LOU,Louisville,274,24.8,Jeff Brohm,Brian Brohm,Ron English,36
+Kansas,B12,,3.7,2.1,76.5,71.5,,1.6,3.5,KAN,Kansas,529,24.5,Lance Leipold,Andy Kotelnicki,D.K. McDonald,39
+Clemson,ACC,,12.8,2.5,81,71,-1.5,0.9,-0.5,CLEM,Clemson,382,26.6,Dabo Swinney,Chad Morris,Tom Allen,40
+TCU,B12,,9.1,2,82.5,71,1,0.5,-4.5,TCU,TCU,415,29.2,Sonny Dykes,Gordon Sammis,Andy Avalos,40
+Pittsburgh,ACC,,6.5,2.7,80.5,70,,1,-1.5,PIT,Pittsburgh,345,26.3,Pat Narduzzi,Kade Bell,Randy Bates,42
+Mississippi State,SEC,,3.9,2.5,78.5,69.5,1.5,0.2,-0.5,MSST,Mississippi State,283,28.9,Jeff Lebby,Jeff Lebby,Zach Arnett,43
+Virginia Tech,ACC,,9.4,1.9,67.5,69.5,1.5,-0.1,10,VTCH,Virginia Tech,276,21.9,James Franklin,Ty Howie,Brent Pry,43
+Colorado,B12,,0.9,2.6,67,68.5,,0.5,11,COLO,Colorado,299,21.2,Deion Sanders,Brennan Marion,Chris Marve,45
+Arizona State,B12,,6.4,3,78,68.5,,-1,1.5,AZST,Arizona State,270,27.4,Kenny Dillingham,Marcus Arroyo,Brian Ward,46
+Maryland,B1G,,3.8,1.8,69,68.5,,0.5,9,MARY,Maryland,363,24.6,Mike Locksley,Pep Hamilton,Ted Monachino,46
+Oklahoma State,B12,,7.1,2.7,63.5,68.5,3,1.1,10,OKST,Oklahoma State,261,18.1,Eric Morris,Sean Brophy,Skyler Cassity,46
+Georgia Tech,ACC,,6,2.4,80,68,-1.5,-1.2,0.5,GTCH,Georgia Tech,263,30.5,Brent Key,George Godsey,Rob Aurich,49
+Kentucky,SEC,,3.8,2.8,77,68,1,0.5,-1,KTKY,Kentucky,375,21.9,Will Stein,Joe Sloan,Jay Bateman,49
+NC State,ACC,,4.9,2.3,75,68,,-0.1,2,NCST,NC State,379,26.2,Dave Doeren,Kurt Roper,DJ Eliot,49
+Baylor,B12,,4.5,2.2,75.5,67.5,,0.6,1.5,BAY,Baylor,326,31.3,Dave Aranda,Jake Spavital,Joe Klanderman,52
+Northwestern,B1G,,4.6,2.9,74,67.5,1.5,-1.2,3,NORW,Northwestern,377,20.9,David Braun,Chip Kelly,Tim McGarigle,52
+Minnesota,B1G,,5.2,2.9,70.5,66.5,,-2.2,7.5,MIN,Minnesota,298,18.1,P.J. Fleck,Greg Harbaugh Jr.,Danny Collins,54
+UCF,B12,,2.3,2.1,68.5,66,,0.2,7,CFL,UCF,311,24.6,Scott Frost,Steve Cooper,Alex Grinch,55
+Virginia,ACC,,6.6,3.2,76.5,66,,-2.1,0,VIR,Virginia,370,28.4,Tony Elliott,Des Kitchings,John Rudzinski,55
+California,ACC,,3.7,2.4,70,65,1.5,-0.9,4,CAL,California,378,23.7,Tosh Lupoi,Pat McCann,Michael Hutchings,57
+UTSA,AAC,,-1.5,2.6,70.5,64,,1.2,2.5,UTSA,UTSA,383,26.9,Jeff Traylor,Justin Burke,Jess Loepp,58
+Texas State,P12,,-5.9,2.1,70.5,63.5,,2,1.5,TXST,Texas State,525,32.8,G.J. Kinne,Landon Keopple,Will Windham,59
+North Dakota State,MW,,-1.4,2.5,,63.5,,,-2.5,NDSU,North Dakota State,992,,Tim Polasek,Dan Larson,Grant Olson,59
+Wake Forest,ACC,,3.6,2.6,73,62.5,,-0.6,-0.5,WAKE,Wake Forest,257,26,Jake Dickert,Rob Ezell,Scottie Hazelton,61
+South Florida,AAC,,-2.8,2.8,81.5,62.5,-1.5,0.8,-9,SFL,South Florida,284,36.7,Brian Hartline,Tim Beck,Josh Aldridge,61
+Boise State,P12,,6.8,2.8,73,62,,-0.4,-1,BOIS,Boise State,323,27.2,Spencer Danielson,Nate Potter,Erik Chinander,63
+Iowa State,B12,,1,2.8,79.5,62,-1.5,-0.3,-7,IWST,Iowa State,296,26.2,Jimmy Rogers,Tyler Roehl,Jesse Bobbit,63
+Old Dominion,SUN,E,-5.8,2.6,75.5,61,,-0.2,-3.5,OLDD,Old Dominion,528,31.9,Ricky Rahne,Kody Cook,Blake Seiler,65
+Duke,ACC,,5.7,2.7,75,61,,-2.4,-3,DUKE,Duke,510,28.2,Manny Diaz,Jonathan Brewer,Jonathan Patke,65
+James Madison,SUN,E,-2.1,3.6,81.5,60.5,-1.5,-0.5,-10,JMU,James Madison,999,29,Billy Napier,Cam Aiken,Robert Bala,67
+San Diego State,P12,,-1.3,2.9,70,60,,0.3,-0.5,SDST,San Diego State,505,23.8,Sean Lewis,Matt Johnson,Demetrius Sumler,68
+Purdue,B1G,,-2.9,1.8,65.5,60,,1.3,2.5,PUR,Purdue,291,22,Barry Odom,Josh Jenson,Michael Scherer,68
+North Texas,AAC,,-11.8,2.8,80,59.5,-1,-0.4,-8.5,NTX,North Texas,317,36.5,Neal Brown,,Matt Powledge,70
+Washington State,P12,,-5.3,3.1,71.5,59.5,1.5,0.6,-4.5,WAST,Washington State,504,21.6,Kirby Moore,Matt Miller,Trent Bray,70
+Navy,AAC,,1.1,2.7,72.5,59.5,,-1.9,-2.5,NAVY,Navy,521,25.1,Brian Newberry,Drew Cronic,P.J. Volker,70
+Louisiana,SUN,W,-9.1,2.6,59.5,59,,-2.3,1,LLAF,Louisiana,511,22.4,Michael Desormeaux,Tim Leger,Jim Salgado,73
+Michigan State,B1G,,0.4,1.9,73,58.5,-1.5,0.3,-4,MCST,Michigan State,359,21.8,Pat Fitzgerald,Nick Sheridan,Joe Rossi,74
+Memphis,AAC,,-1.1,2.4,73,58,,-0.8,-6,MEM,Memphis,509,26.7,Charles Huff,Kevin Decker/David Weeks,Jason Semore,75
+Florida Atlantic,AAC,,-7.1,2.1,61.5,57.5,,0.1,5.5,FATL,Florida Atlantic,371,31.3,Zach Kittley,,Brett Dewhurst,76
+Tulane,AAC,,-5.5,3.1,74.5,57.5,-1,-1.7,-5,TLN,Tulane,310,26.8,Will Hall,Russ Callaway,Nate Fuqua/Tayler Polk,76
+Syracuse,ACC,,-0.7,2.3,57.5,57.5,-1,-0.8,11,SYR,Syracuse,279,21.5,Fran Brown,Jeff Nixon,Vince Kehres,76
+West Virginia,B12,,0.8,2.5,63.5,57.5,,-0.6,3,WVA,West Virginia,265,24.5,Rich Rodriguez,Rich Rodriguez,Zac Alley,76
+North Carolina,ACC,,3.8,1.8,67.5,57,1.5,1.2,-4,NCAR,North Carolina,282,17.8,Bill Belichick,Bobby Petrino,Steve Belichick,80
+Louisiana Tech,CUS,,-8.3,2.5,62,56.5,,-0.8,5.5,LTCH,Louisiana Tech,256,23.7,Sonny Cumbie,Tony Franklin (retired),Luke Olson,81
+East Carolina,AAC,,-2,2.5,74.5,56.5,,-0.6,-8,ECAR,East Carolina,368,32.6,Blake Harrell,John David Baker,Josh Aldridge,81
+New Mexico,MW,,-0.5,1.8,68.5,56.5,,-1.2,-1.5,NMX,New Mexico,530,23.3,Jason Eck,Luke Schleusner,Spence Nowinsky,81
+Rutgers,B1G,,1.8,2.6,71,56.5,,-0.1,-5.5,RUT,Rutgers,519,25.2,Greg Schiano,Kirk Ciarrocca,,81
+Air Force,MW,,-2.4,2.4,62,56.5,,0.4,3,AIR,Air Force,507,25.3,Troy Calhoun,Mike Thiessen,Steven Russ,81
+UNLV,MW,,2.8,3.2,71,55.5,,-1.6,-5,UNLV,UNLV,550,29.2,Dan Mullen,Corey Dennis,Paul Guenther,86
+Toledo,MAC,,-11.5,2.6,74,55,-1,1.2,-8.5,TOL,Toledo,513,28.5,Mike Jacobs,Cris Reisert,Jahmal Brown,87
+Marshall,SUN,E,-6.4,2.7,62,54,,2,-1,MRSH,Marshall,517,27.1,Tony Gibson,Rod Smith,Brad Lambert,88
+Tulsa,AAC,,-7.6,2.3,60,54,,0.8,2,TLS,Tulsa,502,27.7,Tre Lamb,Brad Robbins,Josh Reardon,88
+Florida International,CUS,,-13.7,2.4,60.5,53.5,,-0.9,3.5,FINT,Florida International,367,26.7,Willie Simmons,Nick Coleman,Jovan Dewitt,90
+Utah State,P12,,-7.7,2.6,65.5,53,,1.1,-4,UTST,Utah State,1326,28.6,Bronco Mendenhall,Robert Anae,Nick Howell,91
+Army,AAC,,-3,3.1,65.5,53,,-1.6,-1.5,ARMY,Army,508,20.2,Jeff Monken,Cody Worley,Nate Woody,91
+Western Michigan,MAC,,-7.2,2.8,65,53,,-0.8,-2,WMCH,Western Michigan,512,21.7,Lance Taylor,Walt Bell,Greer Martini-Duane Vaughn,91
+Ohio,MAC,,-13.6,3,66.5,52.5,,-0.3,-3,OHU,Ohio,522,26.5,John Hauser,Scott Isphording,Kurt Mattix,94
+Temple,AAC,,-8.7,2.6,62.5,52.5,,0.7,-1.5,TEM,Temple,358,21.5,KC Keeler,Tyler Walker,Brian L Smith,94
+Liberty,CUS,,-6.4,2.4,58,52,,2.6,0.5,LIB,Liberty,372,25.7,Jamey Chadwell,Newland Isaac,Shawn Quinn,96
+Fresno State,P12,,-2.3,3,64,52,,-0.7,-4,FRES,Fresno State,268,22.1,Matt Entz,Josh Davis,Nick Benedetto,96
+South Alabama,SUN,W,-13.3,1.9,59.5,51.5,,1.1,0.5,SALA,South Alabama,316,24.7,Major Applewhite,Tim Rattay,Todd Orlando/Jason Washington,98
+Stanford,ACC,,-1.9,1.6,64.5,51.5,,-0.8,-3.5,STAN,Stanford,365,19.4,Tavita Pritchard,Terry Heffernan,Kris Richard,98
+Oregon State,P12,,-6.3,2.3,58,51,1,2.6,-1,ORST,Oregon State,275,22.3,JaMarcus Shephard,Mitch Dahlen,Mike MacIntyre,100
+Arkansas State,SUN,W,-8.5,2.9,60.5,51,,-1.4,1,AKST,Arkansas State,524,25.9,Butch Jones,Garrett Altman,Griff McCarley,100
+Miami Ohio,MAC,,-2.9,3.2,62,50.5,,0.7,-2.5,MIAO,Miami (Ohio),287,21.2,Chuck Martin,Gus Ragland,Bill Brechin,102
+Jacksonville State,CUS,,-7.7,3.3,58.5,50.5,,-1.1,2.5,JAXS,Jacksonville State,997,27.1,Charles Kelly,Taylor Housewright,Brian Williams,102
+Hawai'i,MW,,-3.9,2.5,64,50.5,,-1.2,-3,HAW,Hawaii,273,26,Timmy Chang,Timmy Chang,Dennis Thurman,102
+Central Michigan,MAC,,-12.4,2.3,60,50.5,,-0.2,0,CMCH,Central Michigan,523,20.1,Matt Drinkall,Jim Chapin,Sean Cronin,102
+Boston College,ACC,,-1.5,2.7,63,50,,2,-5,BCOL,Boston College,285,25.5,Bill OBrien,Bill OBrien,Ted Roof,106
+Coastal Carolina,SUN,E,-13.8,2.5,57.5,49.5,1,0.3,0,CSTC,Coastal Carolina,401,22.2,Ryan Beard,Nick Petrino,LD Scott,107
+Troy,SUN,W,-6,2.9,63.5,49,,-1.5,-4,TROY,Troy,318,20.5,Gerad Parker,Adam Austin,Dontae Wright,108
+Western Kentucky,CUS,,-5.3,3,63,48.5,,-0.4,-5.5,WKY,Western Kentucky,290,29,Tyson Helton,Bodie Reeder,Davis Merritt,109
+Kennesaw State,CUS,,-9.3,2.7,63.5,48,,-2.3,-4.5,KENST,Kennesaw State,996,26.9,Jerry Mack,Mitch Militello,Marc Matioli,110
+Rice,AAC,,-14.7,2.3,55.5,48,,-0.8,2,RICE,Rice,1276,18.3,Scott Abell,Vince Munch,Jon Kay,110
+Kent State,MAC,,-20.1,1.8,51.5,47.5,,0.1,7,KEST,Kent State,260,17.7,Mark Carney,Clay Patterson,Cherokee Valeria,112
+UConn,IND,,-11.2,2.3,69.5,47,-1.5,-0.7,-11,CON,Connecticut,551,30.4,Jason Candle,Nunzio Campanile,Ryan Manaiac,113
+Wyoming,MW,,-9.6,2.7,58,46.5,,1,-3,WYO,Wyoming,518,21,Jay Sawvel,Christian Taylor,Aaron Bohl,114
+Northern Illinois,MAC,,-18.2,2,52.5,46,,0.6,3.5,NIL,Northern Illinois,527,17.8,Rob Harley,Tony Petersen/Quinn Sanders,DJ Bland,115
+Colorado State,P12,,-8.3,2,54,46,1.5,0.8,-0.5,COST,Colorado State,376,21.3,Jim Mora,Pryce Tracy,Tyson Summers,115
+ULM,SUN,W,-24.3,1.6,53.5,45.5,,1.1,2.5,LMON,ULM,312,19.3,Bryant Vincent,Jesse Montalto,Troy Reffett,117
+Nevada,MW,,-12.2,2.4,56.5,44,,0.4,-3.5,NEV,Nevada,515,17.2,Jeff Choate,Brett Bartolone,Kane Ioane,118
+Georgia Southern,SUN,E,-8.9,2.6,58.5,44,,-1,-4.5,GSOU,Georgia Southern,289,26.8,Clay Helton,Ryan Aplin,Mike Mutz,118
+Appalachian State,SUN,E,-12.1,2.1,58,44,,-1,-4,APP,Appalachian State,337,25.8,Dowell Loggains,Mike Anthony,DJ Smith,118
+San Jose State,MW,,-15.5,2.4,61,43.5,,1.9,-9,SJST,San Jose State,325,26.2,Ken Niumatalolo,Craig Stutzmann,Bojay Filimoeatu,121
+Southern Miss,SUN,W,-23.3,1.9,62.5,43.5,-1.5,-0.6,-7,SMIS,Southern Miss,272,27.9,Blake Anderson,Kyle Cefalo,Joe Bolden,121
+UAB,AAC,,-18.1,2.5,56,43.5,,-0.4,-2.5,UAB,UAB,307,25.3,Alex Mortensen,,Todd Grantham,121
+Georgia State,SUN,E,-25.1,1.8,51.5,43,,1.3,1.5,GAST,Georgia State,520,24.1,Dell McGee,Hue Jackson,Cam Clark/John Haneline,124
+Akron,MAC,,-19.5,1.8,52.5,42.5,,0.2,-0.5,AKRON,Akron,561,23.2,Joe Moorhead,Joe Moorhead,Tim Tibesar,125
+Delaware,CUS,,-13,2.5,53.5,42,,-0.7,-1,DEL,Delaware,995,27.5,Ryan Carty,Terence Archer,Manny Rojas,126
+Missouri State,CUS,,-18.7,2.5,57,42,-2,0.1,-4,MZST,Missouri State,994,24.5,Casey Woods,Mark Cala,Jack Curtis,126
+Middle Tennessee,CUS,,-26,2,54.5,41,,1.1,-4,MTEN,Middle Tennessee,374,24.2,Derek Mason,Anthony Scelfo,Brian Stewart,128
+Eastern Michigan,MAC,,-15,3.3,55.5,41,,0.2,-5.5,EMCH,Eastern Michigan,281,25.5,Chris Creighton,Mike Piatkowski,Tate Omli-Kasey Teegardin,128
+UTEP,CUS,,-20.5,1.6,51,40.5,,1.1,-2,UTEP,UTEP,258,22.8,Scotty Walden,Lanear Sampson/Joe Pappalardo,Kyle Beyer,130
+Buffalo,MAC,,-11.9,2.7,56,40.5,,1.1,-7.5,BUF,Buffalo,278,25.3,Pete Lembo,Tony Tokarz,Brian Dougherty,130
+New Mexico State,CUS,,-16.4,2.8,51.5,39.5,,0,-2,NMST,New Mexico State,562,21.7,Tony Sanchez,Tyler Wright,Joe Morris,132
+Sacramento State,MAC,,-22.7,2.5,,38,,,-7.5,SAC,Sacramento State,993,,Alonzo Carter,Eric Kiesau,Adam Clark,133
+Charlotte,AAC,,-32.4,2.2,48.5,36.5,,-0.2,-1.5,CHAR,Charlotte,264,17.2,Tim Albin,Todd Fitch,Nate Faanes,134
+Bowling Green,MAC,,-13.3,1.8,51.5,35.5,,-0.6,-6,BOWL,Bowling Green,288,18.7,Eddie George,Greg Nosal,Joe Bowden,135
+Ball State,MAC,,-25.2,2.8,47.5,33.5,,-0.8,-4,BALL,Ball State,516,16.2,Mike Uremovich,Craig Harmon,Jeff Knowles,136
+Sam Houston,CUS,,-26.3,2,45.5,33,,-0.8,-1.5,SAMH,Sam Houston,998,19.6,Phil Longo,Zack Patterson,Freddie Aughtry-Lindsay,137
+UMass,MAC,,-30.9,1.5,34,27.5,,0.8,0,MAS,Umass,563,14.2,Joe Harasymiak,Max Warner,Jared Keyte,138

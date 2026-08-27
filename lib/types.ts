@@ -22,4 +22,7 @@ export interface CFBGame {
 export interface PowerRating {
   team: string
   rating: number
+  // Home-field edge in points for this team (HFACW in the ratings file).
+  // Null when the ratings file has no value for the team.
+  hfa: number | null
 }
