@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo } from 'react'
 import NavBar from '@/components/NavBar'
-import ComparisonTable from '@/components/ComparisonTable'
+import ComparisonTable, { ColumnSpec } from '@/components/ComparisonTable'
 import { STAT_SECTIONS } from '@/lib/statRows'
 import { PowerRating } from '@/lib/types'
 import { formatSpread, projectedSpread } from '@/lib/utils'
@@ -14,6 +14,9 @@ const DEFAULT_A = 'Penn State'
 const DEFAULT_B = 'Ohio State'
 
 type Venue = 'a' | 'neutral' | 'b'
+// matchup: each team's offense against the other's defense (how a game actually plays out)
+// head-to-head: the same side of the ball for both teams, offense next to offense
+type View = 'matchup' | 'head2head'
 
 interface CFBTeam {
   school: string
@@ -83,6 +86,7 @@ export default function ComparePage() {
   const [teamA, setTeamA]               = useState(DEFAULT_A)
   const [teamB, setTeamB]               = useState(DEFAULT_B)
   const [venue, setVenue]               = useState<Venue>('neutral')
+  const [view, setView]                 = useState<View>('matchup')
   const [teams, setTeams]               = useState<CFBTeam[]>([])
   const [allStats, setAllStats]         = useState<Record<string,string|number>[]>([])
   const [powerRatings, setPowerRatings] = useState<PowerRating[]>([])
@@ -147,6 +151,12 @@ export default function ComparePage() {
   const metaA = teams.find(t => t.school === teamA)
   const metaB = teams.find(t => t.school === teamB)
 
+  // The four units in play: each team's offense and defense
+  const aOff: ColumnSpec = { team: teamA, side: 'off', stats: statsA, logo: metaA?.logo }
+  const aDef: ColumnSpec = { team: teamA, side: 'def', stats: statsA, logo: metaA?.logo }
+  const bOff: ColumnSpec = { team: teamB, side: 'off', stats: statsB, logo: metaB?.logo }
+  const bDef: ColumnSpec = { team: teamB, side: 'def', stats: statsB, logo: metaB?.logo }
+
   const ratingsMap = useMemo(
     () => Object.fromEntries(powerRatings.map(r => [r.team, r.rating])),
     [powerRatings]
@@ -203,6 +213,29 @@ export default function ComparePage() {
             <option value="b">{teamB} home</option>
           </select>
         </div>
+        <div style={{display:'flex',flexDirection:'column',gap:4}}>
+          <label style={{fontSize:10,color:'var(--an-muted)',textTransform:'uppercase',letterSpacing:'0.06em'}}>View</label>
+          <div style={{display:'flex',gap:4}}>
+            {([['matchup','Matchup'],['head2head','Head to head']] as const).map(([v, label]) => (
+              <button
+                key={v}
+                onClick={() => setView(v)}
+                title={v === 'matchup'
+                  ? 'Each offense against the other team\u2019s defense'
+                  : 'Both offenses side by side, then both defenses'}
+                style={{
+                  padding:'7px 12px',borderRadius:6,fontSize:12,cursor:'pointer',fontFamily:'inherit',
+                  border:'1px solid var(--an-border)',
+                  background: view === v ? 'var(--an-green)' : 'var(--an-surface)',
+                  color: view === v ? '#fff' : 'var(--an-text)',
+                  fontWeight: view === v ? 600 : 400,
+                }}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+        </div>
         {loadingStats && (
           <span style={{fontSize:12,color:'var(--an-muted)',marginLeft:8,alignSelf:'center'}}>Loading stats…</span>
         )}
@@ -256,29 +289,21 @@ export default function ComparePage() {
           </div>
         )}
 
-        {/* One row per section: offense on the left, defense on the right */}
-        {STAT_SECTIONS.map(section => (
-          <div key={section.title} style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:20,marginBottom:20}}>
-            <ComparisonTable
-              title={section.title}
-              rows={section.rows}
-              side="off"
-              teamA={teamA} teamB={teamB}
-              statsA={statsA} statsB={statsB}
-              allStats={allStats}
-              logoA={metaA?.logo} logoB={metaB?.logo}
-            />
-            <ComparisonTable
-              title={section.title}
-              rows={section.rows}
-              side="def"
-              teamA={teamA} teamB={teamB}
-              statsA={statsA} statsB={statsB}
-              allStats={allStats}
-              logoA={metaA?.logo} logoB={metaB?.logo}
-            />
-          </div>
-        ))}
+        {/* Matchup: A's offense against B's defense, then B's offense against A's defense.
+            Head-to-head: the same side of the ball for both teams. */}
+        {STAT_SECTIONS.map(section => {
+          const [left, right] = view === 'matchup'
+            ? [[aOff, bDef], [bOff, aDef]]
+            : [[aOff, bOff], [aDef, bDef]]
+          return (
+            <div key={section.title} style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:20,marginBottom:20}}>
+              <ComparisonTable title={section.title} rows={section.rows}
+                left={left[0]} right={left[1]} allStats={allStats} />
+              <ComparisonTable title={section.title} rows={section.rows}
+                left={right[0]} right={right[1]} allStats={allStats} />
+            </div>
+          )
+        })}
 
       </div>
     </div>

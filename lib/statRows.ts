@@ -7,6 +7,9 @@ export interface StatRow {
   defLowerBetter?: boolean
   pct?: boolean
   decimals?: number
+  // No better/worse direction (play-calling tendency, or a rate whose direction
+  // differs by side). The matchup view claims no edge on these.
+  neutral?: boolean
 }
 
 export const FIVE_FACTORS_ROWS: StatRow[] = [
@@ -23,6 +26,7 @@ export const PASSING_DOWNS_ROWS: StatRow[] = [
     offField: 'off_pass_downs_rate',
     defField: 'def_pass_downs_rate',
     pct: true,
+    neutral: true,
   },
   {
     label: 'PPA',
@@ -51,6 +55,7 @@ export const RUSHING_PLAYS_ROWS: StatRow[] = [
     offField: 'off_rush_rate',
     defField: 'def_rush_rate',
     pct: true,
+    neutral: true,
   },
   {
     label: 'PPA',
@@ -79,6 +84,7 @@ export const STANDARD_DOWNS_ROWS: StatRow[] = [
     offField: 'off_std_downs_rate',
     defField: 'def_std_downs_rate',
     pct: true,
+    neutral: true,
   },
   {
     label: 'PPA',
@@ -107,6 +113,7 @@ export const PASSING_PLAYS_ROWS: StatRow[] = [
     offField: 'off_pass_rate',
     defField: 'def_pass_rate',
     pct: true,
+    neutral: true,
   },
   {
     label: 'PPA',
