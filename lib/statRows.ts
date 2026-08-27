@@ -17,7 +17,12 @@ export const FIVE_FACTORS_ROWS: StatRow[] = [
   { label: 'Explosiveness', offField: 'off_explosiveness',    defField: 'def_explosiveness',    defLowerBetter: true },
   { label: 'Pts Per Opp.',  offField: 'off_points_per_opp',   defField: 'def_points_per_opp',   defLowerBetter: true },
   { label: 'Havoc',         offField: 'off_havoc_total',      defField: 'def_havoc_total',      offLowerBetter: true, pct: true },
-  { label: 'Avg Field Pos', offField: 'off_field_pos_avg_pp', defField: 'def_field_pos_avg_pp', defLowerBetter: true },
+  // Both sides are higher-is-better here. For the defense that reads backwards at a
+  // glance, but the value tracks where the defense forces opponents to start: the
+  // top of the list is Miami / Indiana / Ohio State / Georgia, the bottom is UAB and
+  // UMass, and it correlates negatively with def_ppa (-0.37), where lower ppa is the
+  // better defense.
+  { label: 'Avg Field Pos', offField: 'off_field_pos_avg_pp', defField: 'def_field_pos_avg_pp' },
 ]
 
 export const PASSING_DOWNS_ROWS: StatRow[] = [

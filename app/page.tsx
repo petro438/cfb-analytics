@@ -30,7 +30,7 @@ interface CFBTeam {
 }
 
 export default function DashboardPage() {
-  const [year, setYear]                 = useState('2025')
+  const [year, setYear]                 = useState('2026')
   const [team, setTeam]                 = useState(DEFAULT_TEAM)
   const [teams, setTeams]               = useState<CFBTeam[]>([])
   const [games, setGames]               = useState<CFBGame[]>([])

@@ -84,7 +84,7 @@ function TeamBanner({ team, meta, rating, align }: {
 }
 
 export default function ComparePage() {
-  const [year, setYear]                 = useState('2025')
+  const [year, setYear]                 = useState('2026')
   const [teamA, setTeamA]               = useState(DEFAULT_A)
   const [teamB, setTeamB]               = useState(DEFAULT_B)
   const [venue, setVenue]               = useState<Venue>('neutral')
