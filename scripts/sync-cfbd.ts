@@ -184,8 +184,22 @@ async function syncAdvancedStats() {
   console.log('Fetching advanced stats...')
   const stats = await fetchAdvancedStats(YEAR)
   const rows = stats.map(flattenStats)
-  await writeSheet(SHEET_TABS.ADVANCED_STATS, ADVANCED_STATS_HEADERS, rows)
-  console.log(`  → ${stats.length} teams written`)
+
+  // writeSheet clears the tab, so rows for every other season have to be read
+  // back and rewritten alongside this year's — same as syncGames. Without this,
+  // syncing 2026 would wipe 2025.
+  let preserved: (string | number | null | undefined)[][] = []
+  try {
+    const existing = await readSheet(SHEET_TABS.ADVANCED_STATS)
+    preserved = existing
+      .filter((r) => String(r.season) !== String(YEAR))
+      .map((r) => ADVANCED_STATS_HEADERS.map((h) => r[h] ?? ''))
+  } catch {
+    // Sheet may be empty on first run
+  }
+
+  await writeSheet(SHEET_TABS.ADVANCED_STATS, ADVANCED_STATS_HEADERS, [...preserved, ...rows])
+  console.log(`  → ${stats.length} teams written for ${YEAR}, ${preserved.length} rows preserved from other seasons`)
 }
 
 // ─────────────────────────────────────────────

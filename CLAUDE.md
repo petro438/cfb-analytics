@@ -80,9 +80,19 @@ All data lives in a single Google Sheet. Tab names are defined in `lib/sheets.ts
 ## Key Conventions
 
 ### Year / Season handling
-- The `games` tab stores all seasons in one sheet. Always filter by `season` column.
-- Selecting year `2026` on the frontend shows 2026 schedule but loads **2025 advanced stats** (configured in `STATS_YEAR_FOR` in `page.tsx`).
-- `syncGames()` in the sync script preserves rows from other seasons — it reads existing rows, filters out the current year, then writes combined data back.
+- The `games` and `advanced_stats` tabs store all seasons in one sheet. Always filter by `season`.
+- **Season** picks the schedule year; **Stats** picks which season's stats feed the tables and rank
+  shading. Stats defaults from `STATS_YEAR_FOR` (2026 schedule → 2025 stats) and is overridable per
+  page; changing Season clears any manual Stats pick.
+- The two are deliberately not linked per-team. Ranks are computed by pooling every team in the
+  selected stats year, so mixing seasons inside one pool would make every rank meaningless — a
+  one-game sample has roughly ±6.4 pts of sampling error on success rate, which cannot separate a
+  team from ~116 of the other 135. The whole league moves together or not at all.
+- Both pages warn when the selected stats year covers fewer teams than the league, because early in
+  a season ranks come out of a much smaller pool (16 teams in early September, not 136).
+- `syncGames()` **and** `syncAdvancedStats()` preserve rows from other seasons: they read existing
+  rows, filter out the current year, then write the combination back. `writeSheet` clears the tab
+  first, so any new per-season sync must do this or it will silently wipe the other years.
 
 ### Team name matching (PFF ↔ CFBD)
 - CFBD uses full proper names: `"Penn State"`, `"Ole Miss"`, `"Northwestern"`

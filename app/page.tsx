@@ -31,6 +31,7 @@ interface CFBTeam {
 
 export default function DashboardPage() {
   const [year, setYear]                 = useState('2026')
+  const [statsYearOverride, setStatsYearOverride] = useState<string|null>(null)
   const [team, setTeam]                 = useState(DEFAULT_TEAM)
   const [teams, setTeams]               = useState<CFBTeam[]>([])
   const [games, setGames]               = useState<CFBGame[]>([])
@@ -44,8 +45,17 @@ export default function DashboardPage() {
   const [players, setPlayers]           = useState<Record<string,string|number>[]>([])
   const [loadingPlayers, setLoadingPlayers] = useState(false)
 
-  // For 2026, stats come from 2025
-  const statsYear = STATS_YEAR_FOR[year] ?? year
+  // Which season's stats to show. Defaults to STATS_YEAR_FOR (2026 schedule shows
+  // 2025 stats), but is overridable — early in a season the current year's numbers
+  // rest on a game or two, so switching is a deliberate choice rather than automatic.
+  const defaultStatsYear = STATS_YEAR_FOR[year] ?? year
+  const statsYear = statsYearOverride ?? defaultStatsYear
+
+  // Picking a new schedule season drops any manual stats-year choice
+  function changeYear(y: string) {
+    setYear(y)
+    setStatsYearOverride(null)
+  }
 
   const teamStats = allStats.find(s => s.team === team) ?? null
   const yearStats = allStats
@@ -62,6 +72,12 @@ export default function DashboardPage() {
   }, [team, statsYear, playerTab])
 
   const noData    = !loadingStats && yearStats.length === 0
+
+  // Early in a season only a handful of teams have played, so ranks come out of a
+  // much smaller pool than usual. Say so rather than letting the badges imply otherwise.
+  const statsCoverage = !loadingStats && !loadingTeams && yearStats.length > 0 && teams.length > 0 && yearStats.length < teams.length
+    ? { have: yearStats.length, total: teams.length }
+    : null
 
   // Team logos map: school → logo URL (built from teams list)
   const teamLogos: Record<string, string> = {}
@@ -134,12 +150,25 @@ export default function DashboardPage() {
         </div>
         <div style={{display:'flex',flexDirection:'column',gap:4}}>
           <label style={{fontSize:10,color:'var(--an-muted)',textTransform:'uppercase',letterSpacing:'0.06em'}}>Season</label>
-          <select value={year} onChange={e => setYear(e.target.value)}>
+          <select value={year} onChange={e => changeYear(e.target.value)}>
             {YEARS.map(y => <option key={y} value={y}>{y}</option>)}
+          </select>
+        </div>
+        <div style={{display:'flex',flexDirection:'column',gap:4}}>
+          <label style={{fontSize:10,color:'var(--an-muted)',textTransform:'uppercase',letterSpacing:'0.06em'}} title="Which season's stats to show">Stats</label>
+          <select value={statsYear} onChange={e => setStatsYearOverride(e.target.value)}>
+            {YEARS.map(y => (
+              <option key={y} value={y}>{y}{y === defaultStatsYear ? ' (default)' : ''}</option>
+            ))}
           </select>
         </div>
         {loadingStats && (
           <span style={{fontSize:12,color:'var(--an-muted)',marginLeft:8,alignSelf:'center'}}>Loading stats…</span>
+        )}
+        {statsCoverage && (
+          <span style={{fontSize:11,color:'#b45309',alignSelf:'center',maxWidth:340,lineHeight:1.3}}>
+            ⚠ {statsYear} stats cover {statsCoverage.have} of {statsCoverage.total} teams — ranks are out of {statsCoverage.have}, on {statsCoverage.have < 40 ? 'a game or two' : 'a partial season'}
+          </span>
         )}
       </div>
 
@@ -159,9 +188,9 @@ export default function DashboardPage() {
             <h1 style={{fontSize:24,fontWeight:700,color:'var(--an-text)',lineHeight:1.1}}>{team}</h1>
             <div style={{fontSize:12,color:'var(--an-muted)',marginTop:4}}>
               {td?.conference ?? ''}{td?.conference ? ' · ' : ''}
-              {isFutureYear
-                ? <span>{year} Schedule · <span style={{color:'var(--an-muted)'}}>Stats from {statsYear}</span></span>
-                : <span>{year} Season</span>
+              {year === statsYear
+                ? <span>{year} Season</span>
+                : <span>{year} Schedule · <span style={{color:'var(--an-muted)'}}>{statsYear} Stats</span></span>
               }
               {teamStats
                 ? <span style={{marginLeft:10,color:'var(--an-green)'}}>● Stats loaded</span>

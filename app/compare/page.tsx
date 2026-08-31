@@ -85,6 +85,7 @@ function TeamBanner({ team, meta, rating, align }: {
 
 export default function ComparePage() {
   const [year, setYear]                 = useState('2026')
+  const [statsYearOverride, setStatsYearOverride] = useState<string|null>(null)
   const [teamA, setTeamA]               = useState(DEFAULT_A)
   const [teamB, setTeamB]               = useState(DEFAULT_B)
   const [venue, setVenue]               = useState<Venue>('neutral')
@@ -96,7 +97,15 @@ export default function ComparePage() {
   const [loadingStats, setLoadingStats] = useState(false)
   const [error, setError]               = useState<string|null>(null)
 
-  const statsYear = STATS_YEAR_FOR[year] ?? year
+  // Stats season, defaulted from the schedule year but overridable — see the
+  // dashboard for why this is a deliberate choice rather than automatic.
+  const defaultStatsYear = STATS_YEAR_FOR[year] ?? year
+  const statsYear = statsYearOverride ?? defaultStatsYear
+
+  function changeYear(y: string) {
+    setYear(y)
+    setStatsYearOverride(null)
+  }
 
   // Prefill from ?a=&b=&year= — read directly off the URL so the page needs no Suspense boundary
   useEffect(() => {
@@ -186,6 +195,8 @@ export default function ComparePage() {
   const venueLabel = venue === 'a' ? `at ${teamA}` : venue === 'b' ? `at ${teamB}` : 'neutral site'
 
   const noStats = !loadingStats && allStats.length === 0
+  // Early-season pools are small enough that ranks mean something different
+  const thinStats = !loadingStats && allStats.length > 0 && allStats.length < 100
   const missingA = !loadingStats && allStats.length > 0 && statsA == null
   const missingB = !loadingStats && allStats.length > 0 && statsB == null
 
@@ -210,8 +221,16 @@ export default function ComparePage() {
         <TeamPicker label="Team B" value={teamB} teams={teams} disabled={loadingTeams} onChange={setTeamB} />
         <div style={{display:'flex',flexDirection:'column',gap:4}}>
           <label style={{fontSize:10,color:'var(--an-muted)',textTransform:'uppercase',letterSpacing:'0.06em'}}>Season</label>
-          <select value={year} onChange={e => setYear(e.target.value)}>
+          <select value={year} onChange={e => changeYear(e.target.value)}>
             {YEARS.map(y => <option key={y} value={y}>{y}</option>)}
+          </select>
+        </div>
+        <div style={{display:'flex',flexDirection:'column',gap:4}}>
+          <label style={{fontSize:10,color:'var(--an-muted)',textTransform:'uppercase',letterSpacing:'0.06em'}} title="Which season's stats to show">Stats</label>
+          <select value={statsYear} onChange={e => setStatsYearOverride(e.target.value)}>
+            {YEARS.map(y => (
+              <option key={y} value={y}>{y}{y === defaultStatsYear ? ' (default)' : ''}</option>
+            ))}
           </select>
         </div>
         <div style={{display:'flex',flexDirection:'column',gap:4}}>
@@ -281,8 +300,13 @@ export default function ComparePage() {
           </div>
 
           <div style={{marginTop:14,paddingTop:12,borderTop:'1px solid var(--an-border)',fontSize:11,color:'var(--an-muted)'}}>
-            Spread is from {teamA}&apos;s perspective. Ranks and shading are out of all FBS teams for the {statsYear} season
-            {year !== statsYear && <> (stats for {year} are not final — showing {statsYear})</>}.
+            Spread is from {teamA}&apos;s perspective. Ranks and shading come from the {statsYear} season
+            {year !== statsYear && <> (schedule is {year})</>}
+            {allStats.length === 0
+              ? <>.</>
+              : thinStats
+                ? <span style={{color:'#b45309'}}> — only {allStats.length} teams have {statsYear} stats so far, so ranks are out of {allStats.length}.</span>
+                : <>, across all {allStats.length} FBS teams.</>}
           </div>
         </div>
 

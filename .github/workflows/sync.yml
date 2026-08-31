@@ -38,7 +38,9 @@ jobs:
             --year=2025 \
             --tabs=${{ github.event.inputs.tabs || 'teams,games,advanced_stats,power_ratings' }}
 
-      - name: Sync 2026 games
+      # 2026 is the live season: games for results, advanced_stats so the
+      # dashboard's stats-year selector has current-season numbers to show.
+      - name: Sync 2026 games and stats
         if: ${{ github.event.inputs.year == '' || github.event.inputs.year == '2026' }}
         env:
           CFBD_API_KEY: ${{ secrets.CFBD_API_KEY }}
@@ -47,4 +49,4 @@ jobs:
         run: |
           npx tsx scripts/sync-cfbd.ts \
             --year=2026 \
-            --tabs=games
+            --tabs=${{ github.event.inputs.tabs || 'games,advanced_stats' }}
