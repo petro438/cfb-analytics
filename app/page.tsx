@@ -16,9 +16,10 @@ import {
   PASSING_PLAYS_ROWS,
 } from '@/lib/statRows'
 
-// 2026 shows schedule from 2026 but stats from 2025
+// Stats default to the schedule season. Add an entry (e.g. '2027': '2026') to show
+// last season's stats for a schedule year that hasn't kicked off yet.
 const YEARS = ['2026', '2025', '2024', '2023', '2022']
-const STATS_YEAR_FOR: Record<string, string> = { '2026': '2025' }
+const STATS_YEAR_FOR: Record<string, string> = {}
 const DEFAULT_TEAM = 'Penn State'
 
 interface CFBTeam {
@@ -45,8 +46,8 @@ export default function DashboardPage() {
   const [players, setPlayers]           = useState<Record<string,string|number>[]>([])
   const [loadingPlayers, setLoadingPlayers] = useState(false)
 
-  // Which season's stats to show. Defaults to STATS_YEAR_FOR (2026 schedule shows
-  // 2025 stats), but is overridable — early in a season the current year's numbers
+  // Which season's stats to show. Defaults to the schedule season via STATS_YEAR_FOR
+  // (preseason years can map to last season), but is overridable — early in a season the current year's numbers
   // rest on a game or two, so switching is a deliberate choice rather than automatic.
   const defaultStatsYear = STATS_YEAR_FOR[year] ?? year
   const statsYear = statsYearOverride ?? defaultStatsYear
@@ -113,7 +114,7 @@ export default function DashboardPage() {
       .finally(() => setLoadingGames(false))
   }, [team, year])
 
-  // Load advanced stats — use statsYear (2025 when viewing 2026)
+  // Load advanced stats for statsYear
   useEffect(() => {
     setLoadingStats(true)
     setAllStats([])

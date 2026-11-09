@@ -7,9 +7,9 @@ import { STAT_SECTIONS } from '@/lib/statRows'
 import { PowerRating } from '@/lib/types'
 import { formatSpread, projectedSpread } from '@/lib/utils'
 
-// Mirrors the dashboard: 2026 shows the 2026 schedule but 2025 stats
+// Mirrors the dashboard: stats default to the schedule season unless mapped here
 const YEARS = ['2026', '2025', '2024', '2023', '2022']
-const STATS_YEAR_FOR: Record<string, string> = { '2026': '2025' }
+const STATS_YEAR_FOR: Record<string, string> = {}
 const DEFAULT_A = 'Penn State'
 // Used when a team has a rating but no HFACW value of its own
 const DEFAULT_HFA = 2.5

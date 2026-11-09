@@ -82,7 +82,7 @@ All data lives in a single Google Sheet. Tab names are defined in `lib/sheets.ts
 ### Year / Season handling
 - The `games` and `advanced_stats` tabs store all seasons in one sheet. Always filter by `season`.
 - **Season** picks the schedule year; **Stats** picks which season's stats feed the tables and rank
-  shading. Stats defaults from `STATS_YEAR_FOR` (2026 schedule → 2025 stats) and is overridable per
+  shading. Stats defaults to the Season (`STATS_YEAR_FOR` can map a preseason year to last season's stats; currently empty) and is overridable per
   page; changing Season clears any manual Stats pick.
 - The two are deliberately not linked per-team. Ranks are computed by pooling every team in the
   selected stats year, so mixing seasons inside one pool would make every rank meaningless — a
@@ -187,7 +187,7 @@ The compare page shows the same projection for any two teams with a home/neutral
   "Compare →" button links here with the current team prefilled. Params are read from
   `window.location.search` on mount rather than `useSearchParams`, which keeps the route
   statically prerenderable with no `Suspense` boundary.
-- Follows the same `STATS_YEAR_FOR` rule as the dashboard: 2026 shows 2025 stats.
+- Follows the same `STATS_YEAR_FOR` rule as the dashboard: 2026 shows 2026 stats.
 
 ---
 
