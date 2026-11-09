@@ -24,7 +24,7 @@ import { parse as parseCsv } from 'csv-parse/sync'
 dotenv.config({ path: '.env.local' })
 
 import { writeSheet, readSheet, SHEET_TABS } from '../lib/sheets'
-import { ratingsToCfbd, NOT_YET_FBS } from '../lib/ratingsTeamMap'
+import { ratingsToCfbd } from '../lib/ratingsTeamMap'
 import {
   fetchGames,
   fetchAdvancedStats,
@@ -238,13 +238,18 @@ async function syncPowerRatings() {
   console.log(`  → ${rows.length} teams written`)
   if (skipped.length) console.warn(`  ⚠ no TAN 26 rating, skipped: ${skipped.join(', ')}`)
 
-  // Report names that will not join against the teams tab, ignoring the two
-  // programs that are only FBS from 2026 on.
+  // Report names that will not join against the teams tab. Checked against the
+  // most recent season in the tab, since the ratings are for the latest season
+  // (North Dakota State and Sacramento State are FBS only from 2026 on).
   try {
-    const fbs = new Set((await readSheet(SHEET_TABS.TEAMS)).map((t) => t.school))
+    const teamRows = await readSheet(SHEET_TABS.TEAMS)
+    const latest = Math.max(...teamRows.map((t) => Number(t.season) || 0))
+    const fbs = new Set(
+      teamRows.filter((t) => (Number(t.season) || 0) === latest).map((t) => t.school)
+    )
     const orphans = rows
       .map((row) => String(row[0]))
-      .filter((t) => !fbs.has(t) && !NOT_YET_FBS.has(t))
+      .filter((t) => !fbs.has(t))
     if (orphans.length) {
       console.warn(`  ⚠ ${orphans.length} rated team(s) match no CFBD school — add to RATINGS_TO_CFBD:`)
       orphans.forEach((t) => console.warn(`      ${t}`))
@@ -265,7 +270,7 @@ async function syncTeams() {
   const teams = await fetchTeamsFull(YEAR)
 
   const headers = [
-    'school', 'mascot', 'abbreviation', 'classification',
+    'season', 'school', 'mascot', 'abbreviation', 'classification',
     'conference', 'division', 'color', 'alt_color',
     'logo', 'logo_dark', 'twitter',
     'city', 'state', 'capacity', 'grass', 'dome',
@@ -273,6 +278,7 @@ async function syncTeams() {
   ]
 
   const rows = teams.map((t) => [
+    YEAR,
     t.school,
     t.mascot ?? '',
     t.abbreviation ?? '',
@@ -293,8 +299,23 @@ async function syncTeams() {
     t.location?.longitude ?? '',
   ])
 
-  await writeSheet(SHEET_TABS.TEAMS, headers, rows)
-  console.log(`  → ${teams.length} teams written`)
+  // FBS membership and conferences change between seasons (North Dakota State and
+  // Sacramento State join in 2026, plus realignment), so the tab holds one team list
+  // per season. writeSheet clears the tab, so other seasons are read back and
+  // rewritten — same as syncGames. Rows from before the season column existed have
+  // no season and are dropped.
+  let preserved: (string | number | null | undefined)[][] = []
+  try {
+    const existing = await readSheet(SHEET_TABS.TEAMS)
+    preserved = existing
+      .filter((r) => r.season && String(r.season) !== String(YEAR))
+      .map((r) => headers.map((h) => r[h] ?? ''))
+  } catch {
+    // Sheet may be empty on first run
+  }
+
+  await writeSheet(SHEET_TABS.TEAMS, headers, [...preserved, ...rows])
+  console.log(`  → ${teams.length} teams written for ${YEAR}, ${preserved.length} rows preserved from other seasons`)
 }
 
 // ─────────────────────────────────────────────

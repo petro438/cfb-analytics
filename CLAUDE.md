@@ -54,7 +54,7 @@ scripts/
   sync-pff.ts               Reads local PFF CSVs from public/pff/ → writes to Google Sheets
 
 .github/workflows/
-  sync.yml                  Daily cron: syncs 2025 (all tabs) + 2026 (games only) every day at 6am ET
+  sync.yml                  Daily cron: syncs 2025 (all tabs) + 2026 (teams, games, stats) every day at 6am ET
 ```
 
 ---
@@ -68,7 +68,7 @@ All data lives in a single Google Sheet. Tab names are defined in `lib/sheets.ts
 | `GAMES` | `games` | All FBS games, both regular + postseason, all years stacked |
 | `ADVANCED_STATS` | `advanced_stats` | Season-level advanced stats per team |
 | `POWER_RATINGS` | `power_ratings` | Team power ratings + per-team HFA (manual CSV upload) |
-| `TEAMS` | `teams` | Team metadata: logos, colors, conference, stadium info |
+| `TEAMS` | `teams` | Team metadata per season: logos, colors, conference, stadium info |
 | `PFF_QB` | `pff_qb` | PFF QB stats, multi-season stacked with `season` column |
 | `PFF_RUSH` | `pff_rush` | PFF rushing stats |
 | `PFF_REC` | `pff_rec` | PFF receiving stats |
@@ -90,7 +90,10 @@ All data lives in a single Google Sheet. Tab names are defined in `lib/sheets.ts
   team from ~116 of the other 135. The whole league moves together or not at all.
 - Both pages warn when the selected stats year covers fewer teams than the league, because early in
   a season ranks come out of a much smaller pool (16 teams in early September, not 136).
-- `syncGames()` **and** `syncAdvancedStats()` preserve rows from other seasons: they read existing
+- The `teams` tab is per-season too (`season` column): FBS membership and conferences change year
+  to year (North Dakota State and Sacramento State join in 2026). `/api/teams?year=` returns that
+  season's list, falling back to the latest synced season for years never synced.
+- `syncGames()`, `syncAdvancedStats()` **and** `syncTeams()` preserve rows from other seasons: they read existing
   rows, filter out the current year, then write the combination back. `writeSheet` clears the tab
   first, so any new per-season sync must do this or it will silently wipe the other years.
 
@@ -133,8 +136,8 @@ All data lives in a single Google Sheet. Tab names are defined in `lib/sheets.ts
 `sync-cfbd.ts` writes `team`, `rating`, `hfa` to the sheet and warns about any rated team that
 matches no CFBD school. Five names need mapping (`UMass`→`Massachusetts`, `ULM`→`UL Monroe`,
 `Miami Ohio`→`Miami (OH)`, `Appalachian State`→`App State`, `San Jose State`→`San José State`);
-add to `RATINGS_TO_CFBD` if the export adds more. North Dakota State and Sacramento State are
-rated but only become FBS in 2026, so they stay unmatched until the teams tab is synced for 2026.
+add to `RATINGS_TO_CFBD` if the export adds more. The orphan check runs against the latest season
+in the `teams` tab, which is where North Dakota State and Sacramento State (FBS from 2026) match.
 
 ### Projected spread formula
 ```
@@ -232,7 +235,7 @@ Alternatively, import CSVs directly into the Google Sheet tabs and add a `season
 ## Deployment
 
 - **Vercel** auto-deploys on push to `main`
-- **GitHub Actions** (`sync.yml`) runs daily at 6am ET — syncs 2025 all tabs + 2026 games
+- **GitHub Actions** (`sync.yml`) runs daily at 6am ET — syncs 2025 all tabs + 2026 teams, games and stats
 - Manual trigger available in Actions tab with optional `year` and `tabs` inputs
 - Sync script requires VPN access only for AN CORE API (futures odds — not yet implemented)
 - CFBD API has a 1,000 call/month free limit — the Sheets caching layer means users never hit CFBD directly

@@ -75,7 +75,10 @@ export default function DashboardPage() {
 
   // Early in a season only a handful of teams have played, so ranks come out of a
   // much smaller pool than usual. Say so rather than letting the badges imply otherwise.
-  const statsCoverage = !loadingStats && !loadingTeams && yearStats.length > 0 && teams.length > 0 && yearStats.length < teams.length
+  // Only meaningful when stats and schedule are the same season: `teams` is the
+  // schedule year's league, and a past season's stats are complete even if the
+  // league has since grown (2026 added two FBS teams with no 2025 FBS stats).
+  const statsCoverage = !loadingStats && !loadingTeams && statsYear === year && yearStats.length > 0 && teams.length > 0 && yearStats.length < teams.length
     ? { have: yearStats.length, total: teams.length }
     : null
 

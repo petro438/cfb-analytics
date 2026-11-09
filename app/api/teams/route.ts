@@ -15,8 +15,16 @@ export async function GET(request: NextRequest) {
     }
 
     if (teamsFromSheet.length > 0) {
+      // One team list per season. Seasons that were never synced (e.g. 2022)
+      // fall back to the most recent one; a tab from before the season column
+      // existed is used as-is.
+      const seasons = new Set(teamsFromSheet.map((r) => r.season).filter(Boolean))
+      let season = year
+      if (seasons.size > 0 && !seasons.has(year)) {
+        season = String(Math.max(...Array.from(seasons, Number)))
+      }
       const teams = teamsFromSheet
-        .filter((r) => r.school)
+        .filter((r) => r.school && (seasons.size === 0 || r.season === season))
         .map((r) => ({
           school: r.school,
           mascot: r.mascot || null,
